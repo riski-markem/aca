@@ -1,0 +1,2738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TulangTulung Gombong - Jasa Apa Aja</title>
+    <meta name="apple-mobile-web-app-title" content="TulangTulung Gombong">
+    
+    <link rel="manifest" href="manifest-customer.json?v=5">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" href="logo-pelanggan.png"> <link rel="apple-touch-icon" href="logo-pelanggan.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Maps Platform -->
+    <script>
+        // ═══════════════════════════════════════════════════════
+        // GANTI "AIzaSyBvW7x7bElI9LUZ0WTRa2yzWYefrRuK9AY" dengan API Key Anda!
+        // Aktifkan: Maps JavaScript API + Geocoding API + Places API
+        // ═══════════════════════════════════════════════════════
+        const GOOGLE_MAPS_API_KEY = "AIzaSyBvW7x7bElI9LUZ0WTRa2yzWYefrRuK9AY";
+    </script>
+    <style>
+    :root {
+        --primary: #2c3e50; 
+        --primary-dark: #1a252f; 
+        --primary-deep: #11181f;
+        --primary-light: #ebf0f5; 
+        --primary-glow: rgba(44, 62, 80, 0.25);
+        --accent: #f1c40f; 
+        --accent-light: #fef9e7; 
+        --accent-dark: #d4ac0d;
+        --bg: #F3F5F8;
+        --card: #FFFFFF;
+        --text: #0D1117;
+        --text2: #3D4A5C;
+        --text3: #8A96A8;
+        --border: #E8ECF0;
+        --red: #EF4444;
+        --blue: #3B82F6;
+        --radius: 20px;
+        --radius-sm: 14px;
+        --radius-xs: 10px;
+        --shadow: 0 6px 24px rgba(0,0,0,0.07);
+        --shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
+        --shadow-primary: 0 8px 28px rgba(44, 62, 80, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--bg);
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+    }
+
+    .app {
+        width: 100%;
+        max-width: 480px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        position: relative;
+        overflow: hidden;
+    }
+
+    @media screen and (max-width: 768px) { .app { max-width: 100%; } }
+
+    .page {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 100px;
+        scroll-behavior: smooth;
+    }
+    .page::-webkit-scrollbar { display: none; }
+    .login-hero::after, .hero-banner::after, .hero-banner::before { pointer-events: none; z-index: 0; }
+
+    /* ── PILIHAN BAHASA GLOBAL ── */
+    .lang-pill {
+        display: flex; background: rgba(0,0,0,0.25); border-radius: 24px; padding: 3px; gap: 2px; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1);
+    }
+    .lang-btn {
+        background: none; border: none; color: rgba(255,255,255,0.7); font-size: 10px; font-weight: 700; padding: 5px 10px; border-radius: 20px; cursor: pointer; font-family: inherit; transition: all 0.2s; position: relative; z-index: 2; letter-spacing: 0.3px;
+    }
+    .lang-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+    /* ── TOPBAR ── */
+    .topbar {
+        background: linear-gradient(145deg, var(--primary-dark) 0%, var(--primary) 55%, #34495e 100%);
+        padding: 18px 20px 22px;
+        position: relative;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .topbar::before {
+        content: ''; position: absolute; top: -30px; right: -30px;
+        width: 160px; height: 160px; background: rgba(255,255,255,0.06); border-radius: 50%; pointer-events: none;
+    }
+    .topbar::after {
+        content: ''; position: absolute; bottom: -50px; left: 20px;
+        width: 120px; height: 120px; background: rgba(255,255,255,0.04); border-radius: 50%; pointer-events: none;
+    }
+    .topbar-row { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 10; }
+
+    .topbar-logo { color: white; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .topbar-logo span { color: var(--accent); }
+
+    .topbar-greeting { color: rgba(255,255,255,0.75); font-size: 12.5px; margin-top: 12px; position: relative; z-index: 10; letter-spacing: 0.2px; }
+    .topbar-name { color: white; font-size: 19px; font-weight: 800; margin-top: 2px; position: relative; z-index: 10; letter-spacing: -0.3px; }
+
+    /* ── HERO BANNER ── */
+    .hero-banner {
+        margin: -8px 16px 0;
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, #3b5998 100%);
+        border-radius: var(--radius); padding: 20px 22px; position: relative; overflow: hidden; box-shadow: var(--shadow-primary);
+    }
+    .hero-banner::after { content: ''; position: absolute; right: -25px; top: -25px; width: 150px; height: 150px; background: rgba(255,255,255,0.06); border-radius: 50%; }
+    .hero-banner::before { content: ''; position: absolute; right: 25px; bottom: -35px; width: 110px; height: 110px; background: rgba(255,255,255,0.04); border-radius: 50%; }
+    .hero-tag { background: var(--accent); color: #5C3A00; font-size: 9.5px; font-weight: 800; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; position: relative; z-index: 1; letter-spacing: 1px; text-transform: uppercase; }
+    .hero-title { color: white; font-size: 19px; font-weight: 800; line-height: 1.3; margin-bottom: 7px; position: relative; z-index: 1; letter-spacing: -0.3px; }
+    .hero-sub { color: rgba(255,255,255,0.75); font-size: 12px; line-height: 1.6; max-width: 215px; position: relative; z-index: 1; }
+    .hero-price { margin-top: 16px; background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 10px 16px; display: inline-flex; align-items: center; gap: 10px; position: relative; z-index: 1; backdrop-filter: blur(4px); }
+    .hero-price-main { color: white; font-size: 21px; font-weight: 800; letter-spacing: -0.5px; }
+    .hero-price-sub { color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 600; }
+    .hero-emoji { position: absolute; right: 18px; bottom: 10px; font-size: 60px; z-index: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
+
+    /* ── SECTIONS ── */
+    .section { padding: 20px 16px 0; }
+    .section-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; letter-spacing: -0.2px; }
+
+    /* ── SERVICE GRID ── */
+    .service-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .service-card {
+        background: var(--card); border-radius: var(--radius-sm); padding: 16px 8px 14px; text-align: center; cursor: pointer; transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: var(--shadow-sm); border: 1.5px solid transparent; position: relative; overflow: hidden;
+    }
+    .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--primary-dark)); opacity: 0; transition: opacity 0.2s; border-radius: 3px 3px 0 0; }
+    .service-card:active { transform: scale(0.92); border-color: var(--primary); background: var(--primary-light); box-shadow: var(--shadow-primary); }
+    .service-card:active::before { opacity: 1; }
+    .service-icon { font-size: 30px; margin-bottom: 8px; display: block; transition: transform 0.2s; }
+    .service-label { font-size: 10.5px; font-weight: 700; color: var(--text2); line-height: 1.35; letter-spacing: 0.1px; }
+
+    /* ── PROMO CARDS ── */
+    .promo-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 4px 16px 6px; scrollbar-width: none; margin: 0 -16px; }
+    .promo-scroll::-webkit-scrollbar { display: none; }
+    .promo-card { flex-shrink: 0; width: 210px; border-radius: var(--radius); padding: 18px 16px; position: relative; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+    .promo-card.green { background: linear-gradient(135deg, #16A085, #2ECC71); }
+    .promo-card.amber { background: linear-gradient(135deg, #B45309, #FBBF24); }
+    .promo-card.blue { background: linear-gradient(135deg, #1E40AF, #60A5FA); }
+    .promo-card-tag { font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.7); letter-spacing: 1.2px; text-transform: uppercase; }
+    .promo-card-title { font-size: 14px; font-weight: 800; color: white; margin-top: 5px; line-height: 1.35; }
+    .promo-card-sub { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 5px; }
+    .promo-card-emoji { position: absolute; right: 10px; bottom: 6px; font-size: 38px; opacity: 0.8; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+
+    /* ── ACTIVE ORDER CARD ── */
+    .active-order-card {
+        background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); border: none; margin: 0 16px 14px; position: relative; overflow: hidden;
+    }
+    .active-order-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--primary), var(--accent)); border-radius: 4px 0 0 4px; }
+    .aoc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .aoc-dot {
+        width: 10px; height: 10px; border-radius: 50%; background: var(--accent); animation: pulse 1.8s infinite; box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4);
+    }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
+    .aoc-label { font-size: 12px; font-weight: 800; color: var(--primary); letter-spacing: 0.3px; }
+    .aoc-status { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .aoc-desc { font-size: 12px; color: var(--text3); }
+    .aoc-btn { margin-top: 14px; background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; border-radius: var(--radius-xs); padding: 12px; width: 100%; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 4px 14px var(--primary-glow); transition: all 0.15s; letter-spacing: 0.2px; }
+    .aoc-btn:active { transform: scale(0.97); }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: white; display: none; border-top: 1px solid var(--border); padding: 10px 0 18px; z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0; }
+    .bottom-nav.visible { display: flex; }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; padding: 6px 0; transition: all 0.2s; }
+    .nav-icon-wrap { width: 48px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 16px; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); font-size: 20px; }
+    .nav-item.active .nav-icon-wrap { background: var(--primary-light); transform: translateY(-2px); }
+    .nav-label { font-size: 9.5px; font-weight: 700; color: var(--text3); letter-spacing: 0.3px; text-transform: uppercase; }
+    .nav-item.active .nav-label { color: var(--primary); }
+
+    /* ── LOGIN PAGE ── */
+    .login-page { flex: 1; overflow-y: auto; display: flex; flex-direction: column; position: relative; }
+    .login-hero { background: linear-gradient(150deg, var(--primary-deep) 0%, var(--primary) 60%, var(--primary-dark) 100%); padding: 50px 28px 70px; text-align: center; position: relative; overflow: hidden; }
+    .login-hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; pointer-events: none;}
+    .login-hero::after { content: ''; position: absolute; left: -30px; bottom: -30px; width: 160px; height: 160px; background: rgba(255,255,255,0.04); border-radius: 50%; pointer-events: none;}
+    .login-hero-icon { font-size: 64px; margin-bottom: 14px; display: block; position: relative; z-index: 1; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.2)); animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .login-hero-title { color: white; font-size: 28px; font-weight: 800; position: relative; z-index: 1; letter-spacing: -0.5px; }
+    .login-hero-title span { color: var(--accent); }
+    .login-hero-sub { color: rgba(255,255,255,0.72); font-size: 13.5px; margin-top: 7px; position: relative; z-index: 1; letter-spacing: 0.2px; }
+    .login-body { flex: 1; background: white; border-radius: 30px 30px 0 0; margin-top: -26px; padding: 30px 26px 40px; position: relative; z-index: 2; box-shadow: 0 -4px 30px rgba(0,0,0,0.08); }
+    .login-heading { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.4px; }
+    .login-sub { font-size: 13px; color: var(--text3); margin-bottom: 26px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label { font-size: 12.5px; font-weight: 700; color: var(--text2); margin-bottom: 8px; display: block; letter-spacing: 0.3px; text-transform: uppercase; }
+    .form-input { width: 100%; padding: 15px 18px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; font-family: inherit; background: var(--bg); color: var(--text); transition: all 0.2s; outline: none; font-weight: 600; }
+    .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px var(--primary-light); }
+    .form-hint { font-size: 11.5px; color: #b7791f; margin-top: 6px; font-weight: 600; background: #fef3c7; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #f59e0b; }
+    
+    .btn-primary { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: var(--radius-sm); padding: 17px; font-size: 15.5px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.18s; box-shadow: var(--shadow-primary); letter-spacing: 0.3px; }
+    .btn-primary:active { transform: scale(0.97); box-shadow: 0 2px 10px var(--primary-glow); }
+    .btn-outline { width: 100%; background: none; color: var(--primary); border: 2px solid var(--primary); border-radius: var(--radius-sm); padding: 14px; font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; margin-top: 12px; transition: all 0.15s; }
+    .btn-outline:active { background: var(--primary-light); }
+
+    /* ── INSTALL BAR ── */
+    .install-bar { background: var(--primary-light); border: 1.5px dashed var(--primary); border-radius: var(--radius-sm); padding: 14px 16px; text-align: center; margin-bottom: 20px; display: none; }
+    .install-bar p { font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+    @media all and (display-mode: standalone) { .install-bar { display: none !important; } #row-install-app { display: none !important; } }
+
+    /* ── FORM PAGE & LOCATION BUTTON ── */
+    .form-page { flex: 1; overflow-y: auto; padding-bottom: 40px; }
+    .form-topbar { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); padding: 18px 20px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .back-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; backdrop-filter: blur(4px); }
+    .back-btn:active { background: rgba(255,255,255,0.35); }
+    .form-topbar-title { color: white; font-size: 16px; font-weight: 800; flex: 1;}
+    .form-body { padding: 22px 18px; }
+    .tarif-box { background: #f8faff; border: 1.5px solid #bfdbfe; border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 22px; font-size: 13px; color: #1e3a8a; line-height: 1.7; box-shadow: 0 2px 10px rgba(59,130,246,0.1); }
+    .tarif-box b { color: #1e40af; }
+
+    /* Kotak estimasi jarak & ongkos -- muncul begitu titik jemput & tujuan sudah dipilih di peta */
+    .estimasi-jarak-box {
+        background: #f0fdf4; border: 1.5px solid #86efac; border-radius: var(--radius-sm);
+        padding: 14px 18px; margin: 4px 0 18px 0;
+        box-shadow: 0 2px 10px rgba(34,197,94,0.12);
+        animation: estimasiPopIn 0.3s ease;
+    }
+    .estimasi-jarak-box.hidden { display: none; }
+    @keyframes estimasiPopIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .estimasi-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; }
+    .estimasi-row-grandtotal { border-top: 1px dashed #86c299; margin-top: 4px; padding-top: 8px; }
+    .estimasi-row-grandtotal .estimasi-label, .estimasi-row-grandtotal .estimasi-value { font-weight: 700; font-size: 17px; }
+    .estimasi-label { font-size: 13px; font-weight: 700; color: #166534; }
+    .estimasi-value { font-size: 14px; font-weight: 800; color: #15803d; }
+    .estimasi-value.estimasi-harga { font-size: 17px; color: #166534; }
+    .estimasi-note { font-size: 11px; color: #4d7c5f; margin-top: 6px; font-style: italic; }
+
+    .keranjang-box { background: #FFF7ED; border: 1.5px solid #FDBA74; border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 18px; }
+    .keranjang-resto-nama { font-size: 14px; font-weight: 800; color: #9A3412; margin-bottom: 8px; }
+    .keranjang-item-row { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: #7C2D12; padding: 3px 0; }
+    .keranjang-subtotal-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; color: #9A3412; border-top: 1px dashed #FDBA74; margin-top: 8px; padding-top: 8px; }
+    .btn-ubah-keranjang { width: 100%; margin-top: 10px; background: white; border: 1.5px solid #FDBA74; color: #9A3412; border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+    /* ── DAFTAR RESTO ── */
+    .resto-search-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .resto-search-input-wrap { flex: 1; position: relative; }
+    .resto-search-input-wrap input { width: 100%; padding: 13px 16px 13px 40px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--card); font-size: 13.5px; font-family: inherit; outline: none; box-shadow: var(--shadow-sm); }
+    .resto-search-input-wrap input:focus { border-color: var(--primary); }
+    .resto-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; opacity: 0.5; }
+    .resto-sort-btn { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--card); border: 1.5px solid var(--border); box-shadow: var(--shadow-sm); font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .resto-sort-btn:active { transform: scale(0.94); }
+
+    .resto-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: 14px; overflow: hidden; cursor: pointer; transition: transform 0.1s; }
+    .resto-card:active { transform: scale(0.98); }
+    .resto-card-banner { width: 100%; height: 130px; object-fit: cover; background: linear-gradient(135deg, #FFE8D6, #FFD3B0); display: block; }
+    .resto-card-banner-fallback { width: 100%; height: 130px; background: linear-gradient(135deg, #FFE8D6, #FFD3B0); display: flex; align-items: center; justify-content: center; font-size: 42px; }
+    .resto-card-body { padding: 12px 14px; }
+    .resto-card-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .resto-card-nama { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.25; }
+    .resto-card-badge-tutup { flex-shrink: 0; background: #FEE2E2; color: #B91C1C; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px; }
+    .resto-card-rating-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; font-size: 12.5px; font-weight: 700; color: #B45309; }
+    .resto-card-rating-row .resto-card-baru-badge { background: var(--primary-light); color: var(--primary); font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+    .resto-card-alamat { font-size: 11.5px; color: var(--text3); font-weight: 600; margin-top: 6px; }
+    .resto-empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+
+    /* ── SORT MODAL ── */
+    .sort-modal-sheet { background: var(--card); border-radius: 18px 18px 0 0; padding: 20px; width: 100%; max-width: 480px; box-shadow: 0 -4px 24px rgba(0,0,0,0.15); }
+    .sort-modal-sheet .modal-title { font-size: 15.5px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+    .sort-option { padding: 14px 4px; font-size: 14px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+    .sort-option:last-child { border-bottom: none; }
+    .sort-option.active { color: var(--primary); }
+
+    /* ── MENU RESTO ── */
+
+    .menu-cust-card { background: var(--card); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); border: 1px solid var(--border); padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+    .menu-cust-photo { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: var(--bg); flex-shrink: 0; }
+    .menu-cust-info { flex: 1; min-width: 0; }
+    .menu-cust-nama { font-size: 13.5px; font-weight: 800; color: var(--text); }
+    .menu-cust-harga-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .menu-cust-harga { font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 2px; }
+    .menu-cust-harga-coret { font-size: 11px; color: var(--text3); font-weight: 700; text-decoration: line-through; }
+    .badge-diskon-cust { background: #dc2626; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
+    .btn-pilih-opsi { background: var(--primary); color: white; border: none; border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; flex-shrink: 0; }
+    .badge-qty-opsi { font-size: 10.5px; font-weight: 800; color: var(--primary); margin-top: 4px; }
+    .qty-stepper { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .qty-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--primary); background: white; color: var(--primary); font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .qty-btn:active { background: var(--primary-light); }
+    .qty-val { font-size: 14px; font-weight: 800; color: var(--text); min-width: 18px; text-align: center; }
+    .keranjang-item-opsi-text { font-size: 11px; color: var(--text3); font-weight: 600; padding-left: 8px; }
+    .keranjang-item-row-wrap { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; padding: 4px 0; }
+    .btn-hapus-item-kecil { background: none; border: none; color: #dc2626; font-size: 15px; font-weight: 800; cursor: pointer; flex-shrink: 0; padding: 0 4px; }
+
+    /* ── MODAL PILIH OPSI MENU ── */
+    .opsi-modal-sheet { background: var(--card); border-radius: 18px 18px 0 0; padding: 20px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; box-shadow: 0 -4px 24px rgba(0,0,0,0.15); }
+    .opsi-modal-head { display: flex; gap: 12px; margin-bottom: 14px; }
+    .opsi-modal-head img { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: var(--bg); flex-shrink: 0; }
+    .opsi-grup-title { font-size: 13.5px; font-weight: 800; color: var(--text); margin: 16px 0 4px; display: flex; align-items: center; gap: 6px; }
+    .opsi-grup-wajib-tag { font-size: 10px; font-weight: 800; color: #dc2626; background: #fee2e2; padding: 2px 7px; border-radius: 999px; }
+    .opsi-grup-opsional-tag { font-size: 10px; font-weight: 700; color: var(--text3); background: var(--bg); padding: 2px 7px; border-radius: 999px; }
+    .opsi-pilihan-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .opsi-pilihan-row:last-child { border-bottom: none; }
+    .opsi-pilihan-nama { font-size: 13px; font-weight: 600; color: var(--text); }
+    .opsi-pilihan-tambahan { font-size: 12px; font-weight: 700; color: var(--primary); }
+    .opsi-modal-footer { position: sticky; bottom: -20px; background: var(--card); margin: 16px -20px -20px; padding: 14px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .opsi-modal-qty { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .btn-tambah-opsi-final { flex: 1; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); padding: 13px; font-size: 13.5px; font-weight: 800; font-family: inherit; cursor: pointer; }
+
+    /* ── CART FLOATING BAR ── */
+    .cart-float-bar { position: absolute; left: 16px; right: 16px; bottom: 90px; background: var(--primary); color: white; border-radius: var(--radius-sm); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-lg); cursor: pointer; z-index: 150; }
+    .cart-float-bar.hidden { display: none; }
+    .cart-float-info { font-size: 12.5px; font-weight: 700; }
+    .cart-float-total { font-size: 15px; font-weight: 800; }
+    .cart-float-btn { background: var(--accent); color: var(--primary-dark); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 800; }
+
+    /* Peta preview kecil menampilkan pin jemput (hijau) & tujuan (merah) + rutenya,
+       supaya customer bisa cek visual sebelum order -- bukan cuma teks alamat. */
+    .preview-route-map { width: 100%; height: 160px; border-radius: 10px; margin-top: 10px; overflow: hidden; position: relative; border: 1.5px solid #86efac; }
+    .preview-route-map.hidden { display: none; }
+    .preview-route-legend { position: absolute; top: 8px; left: 8px; z-index: 5; background: rgba(255,255,255,0.92); border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: var(--text2); display: flex; gap: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.12); pointer-events: none; }
+    .preview-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+    .preview-dot-jemput { background: #16A34A; }
+    .preview-dot-tujuan { background: #EF4444; }
+
+    
+    .form-section-label { font-size: 12px; font-weight: 800; color: var(--text2); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    /* Input Wrapper buat Tombol GPS */
+    .input-with-btn { display: flex; gap: 10px; align-items: stretch; }
+    .form-textarea { flex: 1; padding: 15px 18px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; background: var(--bg); resize: none; color: var(--text); transition: all 0.2s; outline: none; font-weight: 600; }
+    .form-textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px var(--primary-light); }
+    
+    /* Tombol GPS */
+    .btn-lokasi { width: 54px; background: var(--primary-light); color: var(--primary); border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 22px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .btn-lokasi:active { background: var(--border); transform: scale(0.95); }
+    
+    /* Hint/Petunjuk Tombol GPS */
+    .form-hint-loc { font-size: 11px; color: var(--text3); margin-top: 8px; font-weight: 600; line-height: 1.4; }
+
+    /* ── TRACKING CARD ── */
+    .tracking-card { background: var(--card); border-radius: var(--radius); margin: 18px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--border); }
+    .tracking-status-bar { padding: 28px 22px 22px; text-align: center; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--primary-light) 0%, white 100%); }
+    .track-icon-big { font-size: 68px; display: block; margin-bottom: 14px; }
+    .track-status-text { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 5px; }
+    .track-desc-text { font-size: 13px; color: var(--text3); font-weight: 600; }
+    .tracking-driver-row { padding: 18px 22px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border); }
+    .driver-avatar { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-light), #bfdbfe); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; box-shadow: 0 4px 12px var(--primary-glow); }
+    .driver-name-label { font-size: 10.5px; color: var(--text3); font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+    .driver-name { font-size: 16px; font-weight: 800; color: var(--primary); }
+    .tracking-actions { padding: 18px 22px; display: flex; flex-direction: column; gap: 12px; }
+    .btn-cancel { background: #FEF2F2; color: var(--red); border: 1.5px solid #FECACA; border-radius: var(--radius-sm); padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; font-family: inherit; transition: all 0.15s; }
+    .btn-cancel:active { background: #FEE2E2; }
+    .btn-complete { background: #EFF6FF; color: var(--blue); border: 1.5px solid #BFDBFE; border-radius: var(--radius-sm); padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; font-family: inherit; transition: all 0.15s; }
+    .btn-wa-driver { background: #ECFDF5; color: #15803D; border: 1.5px solid #86EFAC; border-radius: var(--radius-sm); padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; font-family: inherit; transition: all 0.15s; }
+    .btn-wa-driver:active { background: #D1FAE5; }
+    .btn-ajukan-batal-link { background: none; border: none; color: var(--text3); font-size: 12px; font-weight: 700; text-decoration: underline; cursor: pointer; font-family: inherit; padding: 4px; }
+    .batal-pending-box { background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: var(--radius-sm); padding: 12px 14px; font-size: 12.5px; font-weight: 700; color: #92400E; line-height: 1.5; }
+    .batal-lock-note { font-size: 11px; color: var(--text3); font-weight: 600; text-align: center; margin-top: -2px; }
+
+    /* ── RATING CARD ── */
+    .rating-card { background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border-radius: var(--radius); margin: 0; padding: 22px 22px 28px; text-align: center; border: 1px solid #FDE68A; }
+    .stars { display: flex; justify-content: center; gap: 14px; font-size: 40px; margin-bottom: 18px; }
+    .star { cursor: pointer; color: #E5E7EB; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+    .star.selected { color: #f1c40f; transform: scale(1.15); filter: drop-shadow(0 2px 6px rgba(241,196,15,0.4)); }
+    .rating-textarea { width: 100%; padding: 13px 16px; border: 2px solid #FDE68A; border-radius: var(--radius-sm); font-size: 14px; margin-bottom: 14px; background: white; font-family: inherit; outline: none; transition: border-color 0.2s; }
+    .rating-textarea:focus { border-color: #f1c40f; }
+    .btn-rating { background: linear-gradient(135deg, #d4ac0d, #f1c40f); color: #1C1917; border: none; border-radius: var(--radius-sm); padding: 15px; width: 100%; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; box-shadow: 0 4px 14px rgba(241,196,15,0.35); transition: all 0.15s; }
+    .btn-rating:active { transform: scale(0.97); }
+
+    /* ── HISTORY CARDS ── */
+    .hist-card { background: var(--card); border-radius: var(--radius-sm); margin: 0 16px 12px; padding: 18px; box-shadow: var(--shadow-sm); border: 1.5px solid var(--border); transition: all 0.25s ease; }
+    .hist-card:hover { box-shadow: var(--shadow); border-color: #bfdbfe; }
+    .hc-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .hc-service-wrap { display: flex; flex-direction: column; gap: 4px; }
+    .hc-service { font-size: 15px; font-weight: 800; color: var(--text); }
+    .hc-time { font-size: 11px; color: var(--text3); font-weight: 700; }
+    .hc-status-pill { font-size: 9.5px; font-weight: 800; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; height: fit-content; }
+    .pill-pending { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+    .pill-active { background: #DBEAFE; color: #1E3A8A; border: 1px solid #BFDBFE; }
+    .pill-done { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .pill-cancelled { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+    .hc-toggle-btn { background: var(--bg); border: none; width: 100%; display: flex; justify-content: space-between; align-items: center; color: var(--primary); font-size: 12.5px; font-weight: 800; cursor: pointer; padding: 10px 12px; font-family: inherit; border-radius: var(--radius-xs); margin-top: 10px; transition: background 0.15s; letter-spacing: 0.2px; }
+    .hc-toggle-btn:active { background: var(--border); }
+    .hc-toggle-icon { transition: transform 0.3s ease; font-size: 12px; }
+    .hc-toggle-btn.open .hc-toggle-icon { transform: rotate(180deg); }
+    .hc-details { display: none; }
+    .hc-details.show { display: block; animation: slideDown 0.3s ease-in-out; margin-top: 12px; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .hc-route-box { background: var(--bg); border-radius: 10px; padding: 14px; font-size: 12.5px; color: var(--text); line-height: 1.6; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border); word-break: break-word; }
+    .hc-route-item { display: flex; gap: 12px; align-items: flex-start; }
+    .hc-route-icon { font-size: 16px; line-height: 1.2; }
+    .hc-route-text span { font-size: 9.5px; color: var(--text3); text-transform: uppercase; font-weight: 800; letter-spacing: 0.8px; display: block; margin-bottom: 2px; }
+    .hc-route-text b { font-weight: 700; white-space: pre-wrap; }
+    
+    .hc-driver { font-size: 12.5px; margin-top: 12px; padding: 12px 14px; background: var(--primary-light); border-radius: 10px; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 10px; border: 1px solid #bfdbfe; }
+    .hc-rating { margin-top: 10px; font-size: 13px; color: #F59E0B; font-weight: 800; }
+
+    /* ── PROFILE ── */
+    .profile-hero { background: linear-gradient(150deg, var(--primary-deep) 0%, var(--primary) 60%, var(--primary-dark) 100%); padding: 36px 22px; text-align: center; position: relative; overflow: hidden; }
+    .profile-hero::after { content: ''; position: absolute; right: -30px; top: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.06); border-radius: 50%; pointer-events: none;}
+    .profile-avatar { width: 88px; height: 88px; background: rgba(255,255,255,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 14px; border: 3px solid rgba(255,255,255,0.35); box-shadow: 0 6px 24px rgba(0,0,0,0.15); backdrop-filter: blur(4px); position: relative; z-index: 1; }
+    .profile-name { color: white; font-size: 22px; font-weight: 800; position: relative; z-index: 1; letter-spacing: -0.4px; }
+    .profile-wa { color: rgba(255,255,255,0.72); font-size: 14px; margin-top: 5px; position: relative; z-index: 1; font-weight: 600;}
+    .profile-card { background: var(--card); margin: 18px; border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; border: 1px solid var(--border); }
+    .profile-row { display: flex; align-items: center; gap: 14px; padding: 17px 20px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+    .profile-row:last-child { border-bottom: none; }
+    .profile-row:active { background: var(--bg); }
+    .profile-row-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .profile-row-label { font-size: 14.5px; font-weight: 700; color: var(--text); letter-spacing: 0.1px; }
+    .profile-row-arrow { margin-left: auto; color: var(--text3); font-size: 16px; font-weight: 800; }
+    .btn-logout { margin: 0 18px; width: calc(100% - 36px); background: #FEF2F2; color: var(--red); border: 2px solid #FECACA; border-radius: var(--radius-sm); padding: 16px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .btn-logout:active { background: #FEE2E2; }
+
+    /* ── IKLAN JASA PEMBUATAN APLIKASI ── */
+    .dev-ad-card { background: linear-gradient(135deg, #11181f 0%, #2c3e50 100%); margin: 18px 18px 0; border-radius: var(--radius); padding: 16px 18px; display: flex; align-items: center; gap: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(44,62,80,0.4); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; transition: 0.2s; }
+    .dev-ad-card:active { transform: scale(0.97); }
+    .dev-ad-card::before { content: ''; position: absolute; top: -50%; right: -20%; width: 100px; height: 100px; background: rgba(241, 196, 15, 0.2); border-radius: 50%; filter: blur(20px); pointer-events: none;}
+    .dev-ad-icon { font-size: 32px; flex-shrink: 0; }
+    .dev-ad-content { flex: 1; }
+    .dev-ad-title { color: var(--accent); font-size: 15px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.3px; }
+    .dev-ad-desc { color: rgba(255,255,255,0.85); font-size: 12px; line-height: 1.4; font-weight: 500; }
+    .dev-ad-arrow { color: var(--accent); font-size: 20px; font-weight: bold; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 56px 30px; }
+    .empty-icon { font-size: 80px; margin-bottom: 18px; display: block; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.08)); }
+    .empty-title { font-size: 16px; font-weight: 800; color: var(--text2); }
+    .empty-sub { font-size: 13px; color: var(--text3); margin-top: 7px; line-height: 1.5; font-weight: 600;}
+
+    .hidden { display: none !important; } .mt8 { margin-top: 8px; } .mt16 { margin-top: 16px; }
+
+    /* ── ADMIN CTA CARD ── */
+    .admin-cta-card { background: var(--card); border-radius: var(--radius); padding: 18px 20px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow-sm); border: 1.5px solid var(--border); transition: all 0.15s; }
+    .admin-cta-icon { font-size: 38px; }
+    .admin-cta-btn { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; border-radius: 10px; padding: 10px 18px; font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px var(--primary-glow); transition: all 0.15s; white-space: nowrap; letter-spacing: 0.2px; }
+    .admin-cta-btn:active { transform: scale(0.96); }
+
+    @keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .page { animation: pageIn 0.3s ease-out; }
+    .service-card:hover { box-shadow: var(--shadow); border-color: rgba(44, 62, 80, 0.2); }
+    #page-about .tracking-card { border: 1px solid var(--border); }
+
+    /* ── MAP PICKER MODAL ── */
+    .map-modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999;
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+        backdrop-filter: blur(3px); animation: fadeIn 0.2s ease;
+    }
+    .map-modal-overlay.hidden { display: none; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .map-modal-sheet {
+        background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0;
+        overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        max-height: 90vh; display: flex; flex-direction: column;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .map-modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 4px; margin: 12px auto 4px; flex-shrink: 0; }
+    .map-modal-header {
+        display: flex; align-items: center; gap: 10px; padding: 8px 18px 14px;
+        border-bottom: 1.5px solid var(--border); flex-shrink: 0;
+    }
+    .map-modal-title { font-size: 15px; font-weight: 800; color: var(--text); flex: 1; }
+    .map-modal-close {
+        width: 32px; height: 32px; border: none; background: var(--border); border-radius: 50%;
+        font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        color: var(--text2); font-weight: 700;
+    }
+    #map-picker-container { flex: 1; min-height: 300px; position: relative; isolation: isolate; }
+    .map-pin-center {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%) translateZ(0);
+        font-size: 44px; line-height: 1; pointer-events: none; z-index: 999999;
+        filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45));
+        animation: pinBounce 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        will-change: transform; backface-visibility: hidden;
+    }
+    @keyframes pinBounce {
+        from { transform: translate(-50%,-130%) translateZ(0) scale(0.6); opacity: 0; }
+        to   { transform: translate(-50%,-100%) translateZ(0) scale(1); opacity: 1; }
+    }
+    /* Titik presisi persis di tengah peta -- ini koordinat yang akan dipakai */
+    .map-pin-dot {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(0);
+        width: 10px; height: 10px; border-radius: 50%; background: var(--primary, #FF5722);
+        border: 2px solid #fff; box-shadow: 0 0 0 4px rgba(255,87,34,0.25), 0 1px 3px rgba(0,0,0,0.4);
+        z-index: 999998; pointer-events: none;
+        animation: dotPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(255,87,34,0.25), 0 1px 3px rgba(0,0,0,0.4); }
+        50%      { box-shadow: 0 0 0 8px rgba(255,87,34,0.12), 0 1px 3px rgba(0,0,0,0.4); }
+    }
+    .map-modal-footer { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; background: white; }
+    .map-addr-box {
+        background: var(--bg); border: 2px solid var(--border); border-radius: var(--radius-sm);
+        padding: 11px 14px; font-size: 13px; color: var(--text); font-weight: 600; line-height: 1.4;
+        min-height: 46px; display: flex; align-items: center; gap: 8px;
+    }
+    .map-addr-icon { font-size: 16px; flex-shrink: 0; }
+    .map-addr-text { flex: 1; color: var(--text2); }
+    .map-search-row { display: flex; gap: 8px; }
+    .map-search-input {
+        flex: 1; padding: 11px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm);
+        font-size: 14px; font-family: inherit; background: var(--bg); color: var(--text);
+        outline: none; font-weight: 600; transition: border-color 0.2s;
+    }
+    .map-search-input:focus { border-color: var(--primary); }
+    .map-search-btn {
+        padding: 11px 14px; background: var(--primary); color: white; border: none;
+        border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; cursor: pointer;
+        white-space: nowrap; font-family: inherit;
+    }
+    .btn-pakai-lokasi {
+        background: var(--primary); color: white; border: none; border-radius: var(--radius-sm);
+        padding: 15px; font-size: 15px; font-weight: 800; font-family: inherit; cursor: pointer;
+        width: 100%; transition: all 0.2s; letter-spacing: -0.2px;
+    }
+    .btn-pakai-lokasi:active { transform: scale(0.97); opacity: 0.9; }
+    .btn-gps-map {
+        background: var(--primary-light); color: var(--primary); border: 2px solid var(--border);
+        border-radius: var(--radius-sm); padding: 10px; font-size: 13px; font-weight: 700;
+        font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .map-loading-text { font-size: 12px; color: var(--text3); text-align: center; padding: 4px 0; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <div id="page-login" style="display:flex; flex-direction:column; flex:1; overflow-y:auto; height:100%;">
+        <div class="login-hero">
+            <div style="position:absolute; top:16px; right:16px; z-index:10;">
+                <div class="lang-pill">
+                    <button class="lang-btn lang-ngapak active" onclick="setLang('ngapak')">Ngapak</button>
+                    <button class="lang-btn lang-id" onclick="setLang('id')">ID</button>
+                    <button class="lang-btn lang-en" onclick="setLang('en')">EN</button>
+                </div>
+            </div>
+            <span class="login-hero-icon">🛵</span>
+            <div class="login-hero-title">TulangTulung <span>Gombong</span></div>
+            <div class="login-hero-sub" id="ui-subtitle">Layanan Asli Wong Gombong</div>
+        </div>
+        <div class="login-body">
+            <div id="install-banner" class="install-bar">
+                <p id="ui-install-txt">Pasang Aplikasi TulangTulung Gombong!</p>
+                <button id="btn-install-pwa" class="btn-primary" style="padding:10px;" onclick="installAplikasi()">INSTALL 📲</button>
+            </div>
+            
+            <div class="login-heading" id="ui-login-title">Sugeng Rawuh 👋</div>
+            <div class="login-sub" id="ui-login-desc">Lebokna datamu nggo mulai pesen</div>
+
+            <div class="form-group">
+                <label class="form-label" id="ui-label-nama">Jeneng Panggilan</label>
+                <input class="form-input" type="text" id="inputNama" placeholder="Ketik nang kene...">
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="ui-label-wa">Nomer WA Sing Aktif</label>
+                <input class="form-input" type="tel" inputmode="numeric" id="inputWA" placeholder="Conto: 0813xxxx">
+                <div class="form-hint" id="ui-note-wa">⚠️ Pastikna nomer WA-ne aktif ben driver gampang ngubungi!</div>
+            </div>
+            <button class="btn-primary" onclick="masukAplikasi()" id="ui-btn-login">Mulai Pesen 🚀</button>
+            <button class="btn-outline" onclick="chatAdminLoginPage()" id="ui-btn-admin-login">📞 Butuh Bantuan Admin?</button>
+        </div>
+    </div>
+
+    <div id="app-main" class="hidden" style="display:flex; flex-direction:column; flex:1; overflow:hidden; position:relative; height:100%;">
+
+        <div id="page-home" style="display:flex; flex-direction:column; overflow:hidden; height:100%;">
+            <div class="topbar" style="flex-shrink:0;">
+                <div class="topbar-row">
+                    <div class="topbar-logo">TulangTulung <span>Gombong</span></div>
+                    <div class="lang-pill">
+                        <button class="lang-btn lang-ngapak active" onclick="setLang('ngapak')">Ngapak</button>
+                        <button class="lang-btn lang-id" onclick="setLang('id')">ID</button>
+                        <button class="lang-btn lang-en" onclick="setLang('en')">EN</button>
+                    </div>
+                </div>
+                <div class="topbar-greeting" id="ui-greet-prefix">Sugeng rawuh,</div>
+                <div class="topbar-name" id="displayNama">—</div>
+            </div>
+            <div class="page">
+                
+                <div id="home-active-list" style="margin-top: 16px;"></div>
+
+                <div class="section">
+                    <div class="hero-banner">
+                        <div class="hero-tag" id="ui-hero-tag">TARIF HEMAT</div>
+                        <div class="hero-title" id="ui-hero-title">Pesen Gampang,<br>Rego Pas neng Kantong!</div>
+                        <div class="hero-sub" id="ui-hero-sub">Direwangi sedulur Gombong sing profesional lan grapyak.</div>
+                        <div class="hero-price">
+                            <div>
+                                <div class="hero-price-main">Rp 2.000</div>
+                                <div class="hero-price-sub" id="ui-hero-price-sub">/ kilometer</div>
+                            </div>
+                        </div>
+                        <div class="hero-emoji">🏍️</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title"><span id="ui-section-layanan">Pilih Layanan</span></div>
+                    <div class="service-card mt8" onclick="bukaDaftarResto()" style="border-radius:var(--radius-sm); display:flex; align-items:center; gap:14px; padding:14px 16px; text-align:left; background:linear-gradient(135deg,#FFF7ED,#FEF3C7); border-color:#FDBA74; margin-bottom:10px;">
+                        <span style="font-size:28px;">🍜</span>
+                        <div><div class="service-label" id="cat-makanan" style="font-size:13px; margin-bottom:2px;">Pesan Makanan</div><div style="font-size:11px; color:var(--text3);" id="ui-cat-makanan-sub">Pesen panganan langsung ti warung sing cedak</div></div>
+                        <div style="margin-left:auto; color:var(--text3); font-size:16px;">›</div>
+                    </div>
+                    <div class="service-grid">
+                        <div class="service-card" onclick="bukaForm('Antar Jemput')"><span class="service-icon">🏍️</span><div class="service-label" id="cat-1">Ngeter & Methuk</div></div>
+                        <div class="service-card" onclick="bukaForm('Kirim Barang')"><span class="service-icon">📦</span><div class="service-label" id="cat-2">Kirim Barang</div></div>
+                        <div class="service-card" onclick="bukaForm('Titip Belanja')"><span class="service-icon">🛒</span><div class="service-label" id="cat-3">Titip Tuku</div></div>
+                        <div class="service-card" onclick="bukaForm('Bantu Bersih')"><span class="service-icon">🧹</span><div class="service-label" id="cat-4">Bantu Resik-resik</div></div>
+                    </div>
+                    <div class="service-card mt8" onclick="bukaForm('Jasa Unik')" style="border-radius:var(--radius-sm); display:flex; align-items:center; gap:14px; padding:14px 16px; text-align:left;">
+                        <span style="font-size:28px;">✨</span>
+                        <div><div class="service-label" id="cat-5" style="font-size:13px; margin-bottom:2px;">Jasa Liya-liyane</div><div style="font-size:11px; color:var(--text3);" id="ui-cat5-sub">Jasa liya manut kebutuhanmu</div></div>
+                        <div style="margin-left:auto; color:var(--text3); font-size:16px;">›</div>
+                    </div>
+                </div>
+
+                <div class="section" style="padding-right:0;">
+                    <div class="section-title" style="padding-right:16px;"><span id="ui-section-promo">Info & Promo</span></div>
+                    <div class="promo-scroll">
+                        <div class="promo-card green">
+                            <div class="promo-card-tag" id="ui-promo1-tag">KILAT & SIGAP</div>
+                            <div class="promo-card-title" id="ui-promo1-title">Pelayanan Ekstra Cepet!</div>
+                            <div class="promo-card-sub" id="ui-promo1-sub">Prioritas utama nggo warga Gombong</div>
+                            <div class="promo-card-emoji">⚡</div>
+                        </div>
+                        <div class="promo-card amber">
+                            <div class="promo-card-tag" id="ui-promo2-tag">INFO TARIF</div>
+                            <div class="promo-card-title" id="ui-promo2-title">Tarif Jelas, Nego Langsung!</div>
+                            <div class="promo-card-sub" id="ui-promo2-sub">Chat driver via WA</div>
+                            <div class="promo-card-emoji">💬</div>
+                        </div>
+                        <div class="promo-card blue">
+                            <div class="promo-card-tag" id="ui-promo3-tag">24 JAM</div>
+                            <div class="promo-card-title" id="ui-promo3-title">Siap Rewang Kapan Wae!</div>
+                            <div class="promo-card-sub" id="ui-promo3-sub">Hubungi admin nek butuh bantuan</div>
+                            <div class="promo-card-emoji">⏰</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section mt16" style="margin-bottom:0; padding-bottom:0;">
+                    <div class="admin-cta-card">
+                        <div class="admin-cta-icon">💬</div>
+                        <div style="flex:1;">
+                            <div style="font-size:14px; font-weight:800; color:var(--text);" id="ui-admin-cta-title">Butuh Bantuan Admin?</div>
+                            <div style="font-size:12px; font-weight:600; color:var(--text3); margin-top:2px;" id="ui-admin-cta-sub">Chat langsung via WA</div>
+                        </div>
+                        <button onclick="chatAdminTemplate()" class="admin-cta-btn" id="ui-btn-admin">Chat</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-form" class="hidden" style="display:flex; flex-direction:column; height:100%;">
+            <div class="form-topbar" style="flex-shrink:0;">
+                <button class="back-btn" onclick="kembaliKeMenu()">←</button>
+                <div class="form-topbar-title" id="judulFormTitle" style="flex:1;">Detail Pesenan</div>
+                <div class="lang-pill">
+                    <button class="lang-btn lang-ngapak active" onclick="setLang('ngapak')">Ngapak</button>
+                    <button class="lang-btn lang-id" onclick="setLang('id')">ID</button>
+                    <button class="lang-btn lang-en" onclick="setLang('en')">EN</button>
+                </div>
+            </div>
+            <div class="form-page">
+                <div class="form-body">
+                    <div id="boxInfoTarif" class="tarif-box"></div>
+
+                    <div id="boxKeranjangMakanan" class="keranjang-box hidden">
+                        <div class="keranjang-resto-nama" id="txtKeranjangResto">-</div>
+                        <div id="listKeranjangItems"></div>
+                        <div class="keranjang-item-row"><span>Subtotal Makanan</span><span id="txtKeranjangSubtotal">Rp 0</span></div>
+                        <div class="keranjang-item-row"><span>Biaya Layanan Aplikasi</span><span id="txtKeranjangBiayaLayanan">Rp 0</span></div>
+                        <div class="keranjang-subtotal-row"><span>Total Makanan</span><span id="txtKeranjangTotal">Rp 0</span></div>
+                        <button class="btn-ubah-keranjang" onclick="kembaliKeMenu()">✏️ Ubah Pesanan</button>
+                    </div>
+
+                    <div class="form-group" id="groupDetail1">
+                        <label class="form-section-label" id="labelDetail1">Detail 1</label>
+                        <div class="input-with-btn">
+                            <textarea class="form-textarea" id="inputDetail1" rows="2"></textarea>
+                            <button class="btn-lokasi" onclick="bukaMapPicker('inputDetail1', 'detail1')" title="Pilih Lokasi di Peta">🗺️</button>
+                        </div>
+                        <div class="form-hint-loc" id="ui-loc-hint1">💡 Pencet 🗺️ nek arep milih titik lokasine nang peta.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-section-label" id="labelDetail2">Detail 2</label>
+                        <div class="input-with-btn">
+                            <textarea class="form-textarea" id="inputDetail2" rows="2"></textarea>
+                            <button class="btn-lokasi" onclick="bukaMapPicker('inputDetail2', 'detail2')" title="Pilih Lokasi di Peta">🗺️</button>
+                        </div>
+                        <div class="form-hint-loc" id="ui-loc-hint2">💡 Pencet 🗺️ nek arep milih titik lokasine nang peta.</div>
+                    </div>
+
+                    <div id="boxEstimasiJarak" class="estimasi-jarak-box hidden">
+                        <div class="estimasi-row">
+                            <span class="estimasi-label">📏 Jarak</span>
+                            <span class="estimasi-value" id="txtEstimasiJarak">-</span>
+                        </div>
+                        <div class="estimasi-row">
+                            <span class="estimasi-label">🛵 Ongkos Ngeter</span>
+                            <span class="estimasi-value estimasi-harga" id="txtEstimasiHarga">-</span>
+                        </div>
+                        <div class="estimasi-row estimasi-row-grandtotal hidden" id="rowGrandTotalMakanan">
+                            <span class="estimasi-label">🧾 Total Keseluruhan</span>
+                            <span class="estimasi-value estimasi-harga" id="txtGrandTotalMakanan">-</span>
+                        </div>
+                        <div id="previewRouteMap" class="preview-route-map hidden">
+                            <div class="preview-route-legend">
+                                <span><i class="preview-dot preview-dot-jemput"></i> Jemput</span>
+                                <span><i class="preview-dot preview-dot-tujuan"></i> Tujuan</span>
+                            </div>
+                        </div>
+                        <div class="estimasi-note">*Argo: 1-4 km Rp 8.000, selanjutnya +Rp 2.000/km. Jarak jalan sesungguhnya (via Google Maps), ongkos riil bisa beda dirembug karo driver</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-section-label" id="ui-label-catatan">Catetan Tambahan</label>
+                        <input class="form-input" type="text" id="inputCatatan" placeholder="(Opsional/Bebas bae)">
+                    </div>
+                    
+                    <button class="btn-primary mt16" id="btnKirim" onclick="kirimPesananFirebase()">Kirim Pesenan 🚀</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ DAFTAR RESTO ═══ -->
+        <div id="page-resto-list" class="hidden" style="display:flex; flex-direction:column; height:100%;">
+            <div class="form-topbar" style="flex-shrink:0;">
+                <button class="back-btn" onclick="kembaliDariDaftarResto()">←</button>
+                <div class="form-topbar-title" style="flex:1;">🍜 Pesan Makanan</div>
+            </div>
+            <div class="form-page">
+                <div class="form-body">
+                    <div class="resto-search-bar">
+                        <div class="resto-search-input-wrap">
+                            <span class="resto-search-icon">🔍</span>
+                            <input type="text" id="inputCariResto" placeholder="Cari warung atau menu..." oninput="renderDaftarResto()">
+                        </div>
+                        <button class="resto-sort-btn" onclick="bukaModalSort()" title="Urutkan">⚙️</button>
+                    </div>
+                    <div id="listRestoWrap">
+                        <div class="resto-empty">⏳ Memuat daftar warung...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ MODAL SORT DAFTAR RESTO ═══ -->
+        <div id="modal-sort-resto" class="map-modal-overlay hidden" onclick="if(event.target===this) tutupModalSort()">
+            <div class="sort-modal-sheet">
+                <div class="modal-title">🔽 Urutkan Warung</div>
+                <div id="listSortOption"></div>
+            </div>
+        </div>
+
+        <!-- ═══ MODAL PILIH OPSI MENU ═══ -->
+        <div id="modal-opsi-menu" class="map-modal-overlay hidden" onclick="if(event.target===this) tutupModalOpsiMenu()">
+            <div class="opsi-modal-sheet">
+                <div class="opsi-modal-head">
+                    <img id="opsiModalFoto" src="" onerror="this.src='https://placehold.co/100x100?text=🍽️'">
+                    <div>
+                        <div class="modal-title" style="margin-bottom:2px;" id="opsiModalNama">-</div>
+                        <div class="menu-cust-harga-row" id="opsiModalHargaRow"></div>
+                    </div>
+                </div>
+                <div id="opsiModalGrupList"></div>
+                <div class="opsi-modal-footer">
+                    <div class="opsi-modal-qty">
+                        <button class="qty-btn" onclick="ubahQtyModalOpsi(-1)">−</button>
+                        <span class="qty-val" id="opsiModalQty">1</span>
+                        <button class="qty-btn" onclick="ubahQtyModalOpsi(1)">+</button>
+                    </div>
+                    <button class="btn-tambah-opsi-final" onclick="tambahKeKeranjangDenganOpsi()">Tambah • <span id="opsiModalTotalHarga">Rp 0</span></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ MENU RESTO ═══ -->
+        <div id="page-resto-menu" class="hidden" style="display:flex; flex-direction:column; height:100%; position:relative;">
+            <div class="form-topbar" style="flex-shrink:0;">
+                <button class="back-btn" onclick="kembaliKeDaftarResto()">←</button>
+                <div class="form-topbar-title" id="judulMenuResto" style="flex:1;">Menu Resto</div>
+            </div>
+            <div class="form-page">
+                <div class="form-body" id="listMenuRestoWrap" style="padding-bottom:90px;"></div>
+            </div>
+            <div class="cart-float-bar hidden" id="cartFloatBar" onclick="lanjutKeCheckoutMakanan()">
+                <div><div class="cart-float-info" id="txtCartInfo">0 item</div><div class="cart-float-total" id="txtCartTotal">Rp 0</div></div>
+                <div class="cart-float-btn">Checkout →</div>
+            </div>
+        </div>
+
+        <div id="page-tracking" class="hidden" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+            <div class="topbar" style="flex-shrink:0;">
+                <div class="topbar-row">
+                    <div class="topbar-logo">TulangTulung <span>Gombong</span></div>
+                    <div class="lang-pill">
+                        <button class="lang-btn lang-ngapak active" onclick="setLang('ngapak')">Ngapak</button>
+                        <button class="lang-btn lang-id" onclick="setLang('id')">ID</button>
+                        <button class="lang-btn lang-en" onclick="setLang('en')">EN</button>
+                    </div>
+                </div>
+                <div style="color:rgba(255,255,255,0.85); font-size:13px; font-weight:600; margin-top:8px;" id="ui-track-title">Status Pesenan</div>
+            </div>
+            <div class="page">
+                <div id="tracking-list"></div>
+                <div id="tracking-empty">
+                    <div class="empty-state"><span class="empty-icon">📭</span><div class="empty-title" id="ui-empty-order">Urung ana pesenan aktif.</div><div class="empty-sub" id="ui-empty-sub">Mangga pilih layanan nang Beranda</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-history" class="hidden" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+            <div class="topbar" style="flex-shrink:0;">
+                <div class="topbar-row">
+                    <div class="topbar-logo">TulangTulung <span>Gombong</span></div>
+                    <div class="lang-pill">
+                        <button class="lang-btn lang-ngapak active" onclick="setLang('ngapak')">Ngapak</button>
+                        <button class="lang-btn lang-id" onclick="setLang('id')">ID</button>
+                        <button class="lang-btn lang-en" onclick="setLang('en')">EN</button>
+                    </div>
+                </div>
+                <div style="color:rgba(255,255,255,0.85); font-size:13px; font-weight:600; margin-top:8px;" id="ui-history-title">Riwayat Pesenan</div>
+            </div>
+            <div class="page">
+                <div style="height:16px;"></div>
+                <div id="listHistory"></div>
+            </div>
+        </div>
+
+        <div id="page-profile" class="hidden" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+            <div class="page">
+                <div class="profile-hero">
+                    <div style="position:absolute; top:16px; right:16px; z-index:10;">
+                        <div class="lang-pill">
+                            <button class="lang-btn lang-ngapak active" onclick="setLang('ngapak')">Ngapak</button>
+                            <button class="lang-btn lang-id" onclick="setLang('id')">ID</button>
+                            <button class="lang-btn lang-en" onclick="setLang('en')">EN</button>
+                        </div>
+                    </div>
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileNama">—</div>
+                    <div class="profile-wa" id="profileWA">—</div>
+                </div>
+                
+                <div class="dev-ad-card" onclick="hubungiDeveloper()">
+                    <div class="dev-ad-icon">🚀</div>
+                    <div class="dev-ad-content">
+                        <div class="dev-ad-title" id="ui-ad-title">Kembangkan Bisnismu!</div>
+                        <div class="dev-ad-desc" id="ui-ad-desc">Jasa Pembuatan Aplikasi, Website & Sistem Manajemen Profesional.</div>
+                    </div>
+                    <div class="dev-ad-arrow">›</div>
+                </div>
+
+                <div class="profile-card" style="margin-top: 16px;">
+                    <div class="profile-row" id="row-install-app" onclick="installAplikasi()" style="display:none;"><div class="profile-row-icon" style="background:#FCE7F3;">📲</div><div class="profile-row-label" id="ui-profile-install">Pasang Aplikasi</div><div class="profile-row-arrow">›</div></div>
+                    <div class="profile-row" onclick="bagikanAplikasi()"><div class="profile-row-icon" style="background:#E0E7FF;">📤</div><div class="profile-row-label" id="ui-profile-share">Bagikan Aplikasi</div><div class="profile-row-arrow">›</div></div>
+                    <div class="profile-row" onclick="navigasiKe('history')"><div class="profile-row-icon" style="background:var(--primary-light);">🕒</div><div class="profile-row-label" id="ui-profile-orders">Riwayat Pesenanku</div><div class="profile-row-arrow">›</div></div>
+                    <div class="profile-row" onclick="chatAdminTemplate()"><div class="profile-row-icon" style="background:#FEF3C7;">💬</div><div class="profile-row-label" id="ui-profile-admin">Hubungi Admin</div><div class="profile-row-arrow">›</div></div>
+                    <div class="profile-row" onclick="bukaTentang()"><div class="profile-row-icon" style="background:#EFF6FF;">ℹ️</div><div class="profile-row-label" id="ui-profile-about">Tentang Aplikasi</div><div class="profile-row-arrow">›</div></div>
+                </div>
+                <div style="height:16px;"></div>
+                <button class="btn-logout" onclick="kaluarAplikasi()" id="ui-btn-logout">🚪 Metu (Logout)</button>
+            </div>
+        </div>
+
+        <div id="page-about" class="hidden" style="display:flex; flex-direction:column; height:100%;">
+            <div class="form-topbar" style="flex-shrink:0;">
+                <button class="back-btn" onclick="tutupTentang()">←</button>
+                <div class="form-topbar-title" id="ui-about-topbar" style="flex:1;">Tentang Aplikasi</div>
+                <div class="lang-pill">
+                    <button class="lang-btn lang-ngapak active" onclick="setLang('ngapak')">Ngapak</button>
+                    <button class="lang-btn lang-id" onclick="setLang('id')">ID</button>
+                    <button class="lang-btn lang-en" onclick="setLang('en')">EN</button>
+                </div>
+            </div>
+            <div class="page" style="padding: 20px 16px;">
+                <div class="tracking-card" style="margin: 0; padding: 20px;">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="font-size: 52px; margin-bottom: 6px;">🛵</div><div style="font-size: 22px; font-weight: 800; color: var(--primary);">TulangTulung <span style="color: var(--accent-dark);">Gombong</span></div>
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text3); margin-top: 4px;" id="ui-about-tagline">Layanan Asli Wong Gombong</div>
+                    </div>
+                    <div style="margin-bottom: 20px;"><div style="font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 8px; border-bottom: 2px solid var(--border); padding-bottom: 4px;" id="ui-about-h1">Tentang Kami</div><div style="font-size: 13px; font-weight:600; color: var(--text2); line-height: 1.6;" id="ui-about-p1">TulangTulung Gombong adalah platform penyedia layanan transportasi dan jasa harian on-demand khusus warga lokal. Mengusung konsep dari warga untuk warga, saling menolong dan memberdayakan.</div></div>
+                    <div style="margin-bottom: 20px;"><div style="font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 8px; border-bottom: 2px solid var(--border); padding-bottom: 4px;" id="ui-about-h2">Misi</div><ul style="font-size: 13px; font-weight:600; color: var(--text2); line-height: 1.6; padding-left: 18px; margin: 0;" id="ui-about-p2"></ul></div>
+                    <div style="background: var(--red-light); padding: 14px; border-radius: var(--radius-sm); border: 1.5px dashed var(--red);"><div style="font-size: 14px; font-weight: 800; color: var(--red); margin-bottom: 6px;" id="ui-about-h3">Syarat & Ketentuan</div><div style="font-size: 12px; font-weight:600; color: #991B1B; line-height: 1.5;" id="ui-about-p3">TulangTulung adalah platform penghubung. Untuk pengiriman barang bernilai tinggi sangat disarankan menggunakan asuransi. Segala kerusakan atau kehilangan barang sepenuhnya menjadi tanggung jawab antara mitra driver dan pelanggan.</div></div>
+                </div>
+                <div style="height: 150px; width: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="bottom-nav visible" id="bottom-nav">
+            <div class="nav-item active" id="tab-home" onclick="navigasiKe('home')"><div class="nav-icon-wrap">🏠</div><div class="nav-label" id="nav-home">Beranda</div></div>
+            <div class="nav-item" id="tab-order" onclick="navigasiKe('order')" style="position:relative;"><div class="nav-icon-wrap">🛵</div><div class="nav-label" id="nav-order">Pesenan</div></div>
+            <div class="nav-item" id="tab-history" onclick="navigasiKe('history')"><div class="nav-icon-wrap">🕒</div><div class="nav-label" id="nav-history">Riwayat</div></div>
+            <div class="nav-item" id="tab-profile" onclick="navigasiKe('profile')"><div class="nav-icon-wrap">👤</div><div class="nav-label" id="nav-profile">Profil</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--          MAP PICKER MODAL               -->
+<!-- ═══════════════════════════════════════ -->
+<div id="modal-map-picker" class="map-modal-overlay hidden">
+    <div class="map-modal-sheet">
+        <div class="map-modal-handle"></div>
+        <div class="map-modal-header">
+            <div class="map-modal-title" id="map-modal-title">📍 Pilih Titik Lokasi</div>
+            <button class="map-modal-close" onclick="tutupMapPicker()">✕</button>
+        </div>
+        <!-- Map container -->
+        <div id="map-picker-container">
+            <div class="map-pin-dot"></div>
+            <div class="map-pin-center" id="map-center-pin">📍</div>
+        </div>
+        <!-- Footer controls -->
+        <div class="map-modal-footer">
+            <!-- Search bar -->
+            <div class="map-search-row">
+                <input class="map-search-input" id="map-search-input" type="text" placeholder="Cari nama jalan atau tempat..." />
+                <button class="map-search-btn" onclick="cariLokasiDiPeta()">🔍 Cari</button>
+            </div>
+            <!-- Current address display -->
+            <div class="map-addr-box">
+                <span class="map-addr-icon">🗺️</span>
+                <span class="map-addr-text" id="map-addr-text">Geser peta untuk pilih lokasi...</span>
+            </div>
+            <!-- GPS button + confirm button -->
+            <div style="display:flex; gap:8px;">
+                <button class="btn-gps-map" onclick="pakaiGPSSaatIni()" style="flex:0 0 auto; padding: 10px 14px;">
+                    🎯 GPS
+                </button>
+                <button class="btn-pakai-lokasi" id="btn-pakai-lokasi" onclick="konfirmasiLokasiPeta()">
+                    ✓ Pakai Lokasi Ini
+                </button>
+            </div>
+            <div class="map-loading-text" id="map-loading-text"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, push, set, onValue, update, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js";
+
+    // ── FIREBASE TULANGTULUNG GOMBONG ──
+    const firebaseConfig = {
+      apiKey: "AIzaSyC04vDd6Z1NnrMx5gK7nMCyDceaGZj_bQw",
+      authDomain: "mastulungmasgombong.firebaseapp.com",
+      databaseURL: "https://mastulungmasgombong-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mastulungmasgombong",
+      storageBucket: "mastulungmasgombong.firebasestorage.app",
+      messagingSenderId: "4547691331",
+      appId: "1:4547691331:web:45ecd39aab90f45b4f25f6",
+      measurementId: "G-MCYH7YMQXQ"
+    };
+    
+    const app = initializeApp(firebaseConfig); 
+    const database = getDatabase(app);
+    let messaging;
+    try { messaging = getMessaging(app); } catch(e) {}
+
+    // ── VAPID KEY TULANGTULUNG GOMBONG ──
+    const VAPID_KEY = "BHrjLUSNG-h2NcRw_ypWBHTr3cc-iEZ7jCA8fYzjrWO6Yh4Sqg3xTevCEAcUAbncnWwrZZfOXkuFeWMQCHnkLDs";
+    
+    // ── KONTAK PUSAT ──
+    const NOMOR_ADMIN = "6285870422464";
+    const NOMOR_DEVELOPER = "6281383179209";
+
+    async function setupPushNotification() {
+        if (!('serviceWorker' in navigator) || !('Notification' in window) || !messaging) return;
+
+        let swReg;
+        try { swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js'); } 
+        catch(e) { return; }
+
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') return;
+
+        try {
+            const fcmToken = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+            if (fcmToken && userAktif.wa) {
+                const tokenKey = userAktif.wa.replace(/\D/g, '');
+                await set(ref(database, 'fcm_tokens_customer/' + tokenKey), {
+                    token: fcmToken, nama: userAktif.nama, wa: userAktif.wa, updated: Date.now()
+                });
+            }
+        } catch(e) {}
+
+        onMessage(messaging, (payload) => {
+            const title = payload.notification?.title || '🛵 TulangTulung Gombong';
+            const body = payload.notification?.body || 'Ada update pesanan!';
+            showFloatingNotif(title, body);
+        });
+    }
+
+    function showFloatingNotif(title, body) {
+        const old = document.getElementById('ttg-floating-notif');
+        if (old) old.remove();
+
+        const notif = document.createElement('div');
+        notif.id = 'ttg-floating-notif';
+        notif.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span style="font-size:30px;">🛵</span>
+                <div style="flex:1;">
+                    <div style="font-weight:800;font-size:14px;color:#fff;">${title}</div>
+                    <div style="font-size:12.5px;color:rgba(255,255,255,0.85);margin-top:3px;font-weight:600;">${body}</div>
+                </div>
+                <button onclick="document.getElementById('ttg-floating-notif').remove()" style="background:rgba(255,255,255,0.2);border:none;color:white;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+            </div>
+        `;
+        Object.assign(notif.style, {
+            position: 'fixed', top: '16px', left: '50%', transform: 'translateX(-50%)',
+            width: 'calc(100% - 32px)', maxWidth: '440px',
+            background: 'linear-gradient(135deg, var(--primary-dark), var(--primary))',
+            borderRadius: '16px', padding: '16px 18px',
+            boxShadow: '0 8px 32px rgba(44, 62, 80, 0.45)',
+            zIndex: '9999', animation: 'notifSlideIn 0.4s cubic-bezier(0.34,1.56,0.64,1)', cursor: 'pointer'
+        });
+        notif.onclick = function(e) { if(e.target.tagName !== 'BUTTON') { navigasiKe('order'); notif.remove(); } };
+        document.body.appendChild(notif);
+        setTimeout(() => { if(notif.parentNode) notif.remove(); }, 6000);
+    }
+
+    const notifStyle = document.createElement('style');
+    notifStyle.textContent = `@keyframes notifSlideIn { from { opacity:0; transform:translateX(-50%) translateY(-20px) scale(0.9); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }`;
+    document.head.appendChild(notifStyle);
+
+    const prevOrderStatus = {};
+    function cekPerubahanStatusDanNotif(orders) {
+        const t = langDict[currentLang];
+        orders.forEach(o => {
+            const prev = prevOrderStatus[o.id];
+            if (prev === undefined) { prevOrderStatus[o.id] = o.status; return; }
+            if (prev === 'terbuka' && o.status === 'diambil') {
+                showFloatingNotif(t.status2, `Driver ${o.driver_nama || ''} ${t.notifDiambil} ${o.layanan}.`);
+                if (document.hidden && Notification.permission === 'granted') {
+                    new Notification(`${t.status2} — TulangTulung`, { body: `Driver ${o.driver_nama || ''} ${t.notifDiambil} ${o.layanan}.`, icon: '/logo-satria.png', tag: 'driver-found-' + o.id });
+                }
+            }
+            if (prev === 'diambil' && o.status === 'selesai') {
+                showFloatingNotif(t.status3, `${o.layanan} ${t.notifSelesai}`);
+                if (document.hidden && Notification.permission === 'granted') {
+                    new Notification(`${t.status3} — TulangTulung`, { body: `${o.layanan} ${t.notifSelesai}`, icon: '/logo-satria.png', tag: 'order-done-' + o.id });
+                }
+            }
+            if (prev === 'menunggu_resto' && o.status === 'diterima_resto') {
+                showFloatingNotif(t.statusRestoTerima || 'Resto Menerima Pesanan', `${o.resto_nama || 'Resto'} sedang menyiapkan pesananmu.`);
+                if (document.hidden && Notification.permission === 'granted') {
+                    new Notification(`${t.statusRestoTerima || 'Resto Menerima Pesanan'} — TulangTulung`, { body: `${o.resto_nama || 'Resto'} sedang menyiapkan pesananmu.`, icon: '/logo-satria.png', tag: 'resto-terima-' + o.id });
+                }
+            }
+            if (prev === 'menunggu_resto' && o.status === 'ditolak_resto') {
+                showFloatingNotif(t.statusDitolakResto || 'Ditolak Resto', `${o.resto_nama || 'Resto'} tidak bisa memproses pesananmu.${o.alasan_tolak_resto ? ' Alasan: '+o.alasan_tolak_resto : ''}`);
+                if (document.hidden && Notification.permission === 'granted') {
+                    new Notification(`${t.statusDitolakResto || 'Ditolak Resto'} — TulangTulung`, { body: `${o.resto_nama || 'Resto'} tidak bisa memproses pesananmu.`, icon: '/logo-satria.png', tag: 'resto-tolak-' + o.id });
+                }
+            }
+            if (prev === 'diterima_resto' && o.status === 'diambil') {
+                showFloatingNotif(t.status2, `Driver ${o.driver_nama || ''} ${t.notifDiambil} ${o.layanan}.`);
+                if (document.hidden && Notification.permission === 'granted') {
+                    new Notification(`${t.status2} — TulangTulung`, { body: `Driver ${o.driver_nama || ''} ${t.notifDiambil} ${o.layanan}.`, icon: '/logo-satria.png', tag: 'driver-found-' + o.id });
+                }
+            }
+            prevOrderStatus[o.id] = o.status;
+        });
+    }
+
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw-customer.js').catch((err) => {}); }); }
+
+    let userAktif = { nama: "", wa: "" }; let layananAktif = ""; let currentLang = "ngapak"; let currentOrderId = "";
+    
+    periksaLogin();
+    function periksaLogin() {
+        const simpanan = localStorage.getItem('ttg_customer');
+        if(simpanan) {
+            userAktif = JSON.parse(simpanan);
+            document.getElementById('displayNama').innerText = userAktif.nama;
+            document.getElementById('profileNama').innerText = userAktif.nama;
+            document.getElementById('profileWA').innerText = userAktif.wa;
+            document.getElementById('page-login').classList.add('hidden');
+            document.getElementById('app-main').classList.remove('hidden');
+            pantauDataPesenanWarga();
+            setupPushNotification();
+        }
+    }
+
+    // ── KAMUS 3 BAHASA LENGKAP ──
+    const langDict = {
+        ngapak: {
+            loginTitle: "Sugeng Rawuh 👋", subtitle: "Layanan Asli Wong Gombong", loginDesc: "Lebokna datamu nggo mulai pesen", lblNama: "Jeneng Panggilan", lblWa: "Nomer WA Sing Aktif", noteWa: "⚠️ Pastikna nomer WA-ne aktif ben driver gampang ngubungi!", btnLogin: "Mulai Pesen 🚀", ph_nama: "Ketik nang kene...", ph_wa: "Conto: 0813xxxx", btnAdminLogin: "📞 Butuh Bantuan Admin?",
+            greetPrefix: "Sugeng rawuh,", c1: "Ngeter & Methuk", c2: "Kirim Barang", c3: "Titip Tuku", c4: "Bantu Resik-resik", c5: "Jasa Liya-liyane", cat5sub: "Jasa liya manut kebutuhanmu", btnAdmin: "Chat", adminCtaTitle: "Butuh Bantuan Admin?", adminCtaSub: "Chat langsung via WA",
+            sectionLayanan: "Pilih Layanan", sectionPromo: "Info & Promo", heroTag: "TARIF HEMAT", heroTitle: "Pesen Gampang,\nRego Pas neng Kantong!", heroSub: "Direwangi sedulur Gombong sing profesional lan grapyak.", heroPriceSub: "/ kilometer",
+            promo1Tag: "KILAT & SIGAP", promo1Title: "Pelayanan Ekstra Cepet!", promo1Sub: "Prioritas utama nggo warga Gombong", promo2Tag: "INFO TARIF", promo2Title: "Tarif Jelas, Nego Langsung!", promo2Sub: "Chat driver via WA", promo3Tag: "24 JAM", promo3Title: "Siap Rewang Kapan Wae!", promo3Sub: "Hubungi admin nek butuh bantuan",
+            btnBack1: "Bali", lblCatatan: "Catetan Tambahan", btnOrder: "Kirim Pesenan 🚀", trackTitle: "Status Pesenan", histTitle: "Riwayat Pesenan", navHome: "Beranda", navOrder: "Pesenan", navHistory: "Riwayat", navProfile: "Profil", profTitle: "Profilku", btnLogout: "🚪 Metu (Logout)", emptyOrder: "Urung ana pesenan aktif.", emptySub: "Mangga pilih layanan nang Beranda",
+            profileOrders: "Riwayat Pesenanku", profileAdmin: "Hubungi Admin", profileAbout: "Tentang Aplikasi", profileShare: "Bagikan Aplikasi", profileInstall: "Pasang Aplikasi", aocLabel: "Pesenan Aktif", aocBtn: "📍 Lacak Pesenanku", btnDetail: "Rincian Pesenan",
+            tarif1: "🚗 <b>Rega Dasar:</b> Rp 2.000 / Kilo.<br>Rega dirembug via WA karo driver.", tarif2: "📦 <b>Rega Kurir:</b> Rp 2.000 / Kilo.<br>Rega dirembug via WA karo driver.", tarif3: "🛒 <b>Rega Jasa:</b> Rp 2.000 / Kilo.<br>Rega dirembug via WA karo driver.", tarif4: "🧹 <b>Rega Resik-resik:</b> Bebas (Nego).<br>Mangga nego via WA karo driver.", tarif5: "✨ <b>Jasa Liya-liyane:</b> Bebas (Nego).<br>Rembugan rego via WA bae.",
+            t_formTitle: "Detail Pesenan", t_jemput: "Lokasi Methuk", t_antar: "Lokasi Ngeter", t_ambil: "Njukut Barang Nang", t_kirim: "Kirim Barang Maring", t_daftar: "Daftar Sing Arep Dituku", t_alamat: "Alamat Ngirim", t_resik: "Apa sing arep diresiki?", t_lokasi: "Lokasine nang endi?", t_unik: "Sebutna Penjalukmu", t_waktu: "Alamat / Jam Pira",
+            ph_jemput: "Contoh: Pasar Gombong...", ph_antar: "Contoh: Stasiun Gombong...", ph_ambil: "Contoh: Umahku...", ph_kirim: "Contoh: JNE Gombong...", ph_daftar: "Contoh: Tuku sate ambal...", ph_alamat: "Contoh: Anterna maring...", ph_resik: "Contoh: Nyapu pekarangan...", ph_lokasi: "Contoh: Umah mburi kelurahan...", ph_unik: "Contoh: Tulung pindahna lemari...", ph_waktu: "Contoh: Dina kiye jam 2...",
+            templateWA: "Halo Admin TulangTulung Gombong, nyong [NAMA]. Nyong arep takon: ", installTxt: "Pasang Aplikasi!", btnInstall: "INSTALL 📲", btnCancel: "❌ Batalna", btnComplete: "✅ Konfirmasi Beres", ratingTitle: "Kepiye pelayanan drivere?", ratingTitleResto: "Kepiye rasa panganane?", ph_ulasan: "Tulis ulasan (opsional)...", btnRating: "Kirim Rating ⭐",
+            btnHubungiDriver: "💬 Hubungi Driver", btnBatalGratis: "❌ Batalna (Gratis)", btnAjukanBatal: "Njaluk Pembatalan", btnBatalkanPermintaan: "Batalna Panjaluk Iki",
+            txtMenungguBatal: "Panjaluk pembatalan wis dikirim, ngenteni driver ACC.", noteBatalTerkunci: "*Saldo driver wis kepotong. Njaluk batal kudu di-ACC driver disit.",
+            catMakanan: "Pesan Makanan", catMakananSub: "Pesen panganan langsung ti warung sing cedak",
+            tarifMakanan: "🍜 <b>Ongkos Ngeter:</b> Rp 2.000/km (padha karo Ngeter & Methuk), dibayar kesah teka rego panganan.",
+            t_antarMakanan: "Alamat Diteraken Maring", ph_antarMakanan: "Alamat lengkap sing arep dituju...",
+            statusMenungguResto: "Ngenteni Konfirmasi Resto", descMenungguResto: "Ngenteni resto ngonfirmasi pesenanmu.",
+            statusRestoTerima: "Resto Lagi Nyiapna Panganan", descRestoTerima: "Pesenanmu lagi disiapna, ngenteni driver njukut.",
+            statusDitolakResto: "Ditolak Resto",
+            status1: "Lagi Golek Driver...", desc1: "Dienteni sedela ya lur...", status2: "Driver Wis Olih!", desc2: "Driver arep chat WA nggo konfirmasi.", status3: "Pesenan Beres!", desc3: "Suwun wis nganggo TulangTulung Gombong!", status4: "Dibatalna", desc4: "Pesenan kiye wis dibatalna.", alertRating: "Suwun rating & ulasane lur!", pillDone: "Beres ✓", pillOngoing: "Lagi Mlaku", emptyHistory: "Urung ana riwayat pesenan.",
+            aboutTagline: "Layanan Asli Wong Gombong", aboutH1: "Tentang Kami", aboutP1: "TulangTulung Gombong adalah platform penyedia layanan transportasi dan jasa harian on-demand khusus warga lokal. Mengusung konsep dari warga untuk warga, saling menolong dan memberdayakan.",
+            aboutH2: "Misi", aboutP2: "<li style='margin-bottom:6px;'><b>Kebutuhan Warga:</b> Layanan praktis & cepat tanggap.</li><li style='margin-bottom:6px;'><b>Adil:</b> Tanpa potongan persentase penghasilan yang merugikan.</li><li style='margin-bottom:6px;'><b>Aman:</b> Dilayani oleh sesama warga yang saling mengenal.</li>",
+            aboutH3: "Syarat & Ketentuan", aboutP3: "TulangTulung adalah platform penghubung. Untuk pengiriman barang bernilai tinggi sangat disarankan menggunakan asuransi. Segala kerusakan atau kehilangan barang sepenuhnya menjadi tanggung jawab antara mitra driver dan pelanggan.",
+            notifDiambil: "siap njikot pesenan", notifSelesai: "wis beres. Aja klalen aweh rating!",
+            adTitle: "Kembangkan Bisnismu!", adDesc: "Jasa Pembuatan Aplikasi, Website & Sistem Manajemen Profesional.",
+            waDevMsg: "Halo Mas Riski, nyong weruh sekang aplikasi TulangTulung Gombong. Nyong minat arep gawe Aplikasi/Website nggo bisnisku. Bisa diskusi sedela?",
+            locSearch: "Lagi nggolek lokasi GPS...", locError: "Gagal njikot lokasi. Pastikna GPS murup lan diizini (Allow) nang browser!",
+            locHint: "💡 Pencet 📍 nek arep nggunakna titik lokasimu sing siki."
+        },
+        id: {
+            loginTitle: "Selamat Datang 👋", subtitle: "Layanan Asli Warga Lokal", loginDesc: "Masukkan data kamu untuk mulai pesan", lblNama: "Nama Panggilan", lblWa: "Nomor WhatsApp Aktif", noteWa: "⚠️ Pastikan nomor WA aktif agar driver bisa menghubungi kamu!", btnLogin: "Mulai Pesan 🚀", ph_nama: "Ketik di sini...", ph_wa: "Contoh: 0813xxxx", btnAdminLogin: "📞 Butuh Bantuan Admin?",
+            greetPrefix: "Selamat datang,", c1: "Antar Jemput", c2: "Kirim Barang", c3: "Titip Belanja", c4: "Bantu Bersih", c5: "Jasa Lainnya", cat5sub: "Jasa lainnya sesuai kebutuhanmu", btnAdmin: "Chat", adminCtaTitle: "Butuh Bantuan Admin?", adminCtaSub: "Chat langsung via WhatsApp",
+            sectionLayanan: "Pilih Layanan", sectionPromo: "Informasi & Promo", heroTag: "TARIF HEMAT", heroTitle: "Pesan Mudah,\nHarga Terjangkau!", heroSub: "Dibantu warga lokal yang amanah dan profesional.", heroPriceSub: "/ kilometer",
+            promo1Tag: "KILAT & SIGAP", promo1Title: "Pelayanan Ekstra Cepat!", promo1Sub: "Prioritas utama untuk warga", promo2Tag: "INFO TARIF", promo2Title: "Tarif Transparan, Nego Langsung!", promo2Sub: "Chat driver via WhatsApp", promo3Tag: "24 JAM", promo3Title: "Siap Membantu Kapan Saja!", promo3Sub: "Hubungi admin jika butuh bantuan",
+            btnBack1: "Kembali", lblCatatan: "Catatan Tambahan", btnOrder: "Kirim Pesanan 🚀", trackTitle: "Status Pesanan", histTitle: "Riwayat Pesanan", navHome: "Beranda", navOrder: "Pesanan", navHistory: "Riwayat", navProfile: "Profil", profTitle: "Profil Saya", btnLogout: "🚪 Keluar (Logout)", emptyOrder: "Belum ada pesanan aktif.", emptySub: "Silakan pilih layanan di Beranda",
+            profileOrders: "Riwayat Pesanan", profileAdmin: "Hubungi Admin", profileAbout: "Tentang Aplikasi", profileShare: "Bagikan Aplikasi", profileInstall: "Install Aplikasi", aocLabel: "Pesanan Aktif", aocBtn: "📍 Lacak Pesanan", btnDetail: "Rincian Pesanan",
+            tarif1: "🚗 <b>Tarif Dasar:</b> Rp 2.000 / Kilometer.<br>Harga disepakati via WA dengan driver.", tarif2: "📦 <b>Tarif Kurir:</b> Rp 2.000 / Kilometer.<br>Harga disepakati via WA dengan driver.", tarif3: "🛒 <b>Tarif Jasa:</b> Rp 2.000 / Kilometer.<br>Harga disepakati via WA dengan driver.", tarif4: "🧹 <b>Tarif Bersih-bersih:</b> Fleksibel (Nego).<br>Silakan nego via WA dengan petugas.", tarif5: "✨ <b>Jasa Lainnya:</b> Fleksibel (Nego).<br>Diskusikan harga via WA.",
+            t_formTitle: "Detail Pesanan", t_jemput: "Titik Jemput", t_antar: "Titik Tujuan", t_ambil: "Ambil Barang Di", t_kirim: "Kirim Barang Ke", t_daftar: "Daftar Belanjaan", t_alamat: "Alamat Pengiriman", t_resik: "Apa yang dibersihkan?", t_lokasi: "Alamat Lokasi", t_unik: "Sebutkan Permintaanmu", t_waktu: "Alamat / Waktu",
+            ph_jemput: "Contoh: Pasar Gombong...", ph_antar: "Contoh: Stasiun Gombong...", ph_ambil: "Contoh: Rumah saya...", ph_kirim: "Contoh: JNE Gombong...", ph_daftar: "Contoh: Beli sate...", ph_alamat: "Contoh: Antar ke...", ph_resik: "Contoh: Sapu halaman...", ph_lokasi: "Contoh: Rumah belakang...", ph_unik: "Contoh: Tolong pindahkan...", ph_waktu: "Contoh: Hari ini...",
+            templateWA: "Halo Admin TulangTulung Gombong, saya [NAMA]. Saya ingin bertanya: ", installTxt: "Install Aplikasi!", btnInstall: "INSTALL 📲", btnCancel: "❌ Batalkan Pesanan", btnComplete: "✅ Konfirmasi Selesai", ratingTitle: "Bagaimana pelayanan driver kami?", ratingTitleResto: "Bagaimana rasa makanannya?", ph_ulasan: "Tulis ulasan (opsional)...", btnRating: "Kirim Rating ⭐",
+            btnHubungiDriver: "💬 Hubungi Driver", btnBatalGratis: "❌ Batalkan (Gratis)", btnAjukanBatal: "Ajukan Pembatalan", btnBatalkanPermintaan: "Batalkan Permintaan Ini",
+            txtMenungguBatal: "Permintaan pembatalan sudah dikirim, menunggu ACC driver.", noteBatalTerkunci: "*Saldo driver sudah terpotong. Pembatalan perlu di-ACC driver dulu.",
+            catMakanan: "Pesan Makanan", catMakananSub: "Pesan makanan langsung dari warung terdekat",
+            tarifMakanan: "🍜 <b>Ongkos Antar:</b> Rp 2.000/km (sama seperti Antar Jemput), dibayar terpisah dari harga makanan.",
+            t_antarMakanan: "Alamat Pengantaran", ph_antarMakanan: "Alamat lengkap tujuan pengantaran...",
+            statusMenungguResto: "Menunggu Konfirmasi Resto", descMenungguResto: "Menunggu resto mengonfirmasi pesananmu.",
+            statusRestoTerima: "Resto Menyiapkan Pesanan", descRestoTerima: "Pesananmu sedang disiapkan, tunggu driver mengambilnya.",
+            statusDitolakResto: "Ditolak Resto",
+            status1: "Mencari Driver...", desc1: "Mohon tunggu sebentar...", status2: "Driver Ditemukan!", desc2: "Driver akan chat WA.", status3: "Pesanan Selesai!", desc3: "Terima kasih sudah menggunakan layanan kami!", status4: "Dibatalkan", desc4: "Pesanan ini telah dibatalkan.", alertRating: "Terima kasih atas ulasan Anda!", pillDone: "Selesai ✓", pillOngoing: "Sedang Berjalan", emptyHistory: "Belum ada riwayat pesanan.",
+            aboutTagline: "Layanan Asli Wong Gombong", aboutH1: "Tentang Kami", aboutP1: "TulangTulung Gombong adalah platform penyedia layanan transportasi dan jasa harian on-demand khusus warga lokal. Mengusung konsep dari warga untuk warga, saling menolong dan memberdayakan.",
+            aboutH2: "Misi", aboutP2: "<li style='margin-bottom:6px;'><b>Kebutuhan Warga:</b> Layanan praktis & cepat tanggap.</li><li style='margin-bottom:6px;'><b>Adil:</b> Tanpa potongan persentase penghasilan yang merugikan.</li><li style='margin-bottom:6px;'><b>Aman:</b> Dilayani oleh sesama warga yang saling mengenal.</li>",
+            aboutH3: "Syarat & Ketentuan", aboutP3: "TulangTulung adalah platform penghubung. Untuk pengiriman barang bernilai tinggi sangat disarankan menggunakan asuransi. Segala kerusakan atau kehilangan barang sepenuhnya menjadi tanggung jawab antara mitra driver dan pelanggan.",
+            notifDiambil: "siap mengambil pesanan", notifSelesai: "telah selesai. Jangan lupa beri rating!",
+            adTitle: "Kembangkan Bisnismu!", adDesc: "Jasa Pembuatan Aplikasi, Website & Sistem Manajemen Profesional.",
+            waDevMsg: "Halo Mas Riski, saya mengetahui dari aplikasi TulangTulung Gombong. Saya tertarik untuk berdiskusi mengenai jasa pembuatan Aplikasi/Website untuk bisnis saya.",
+            locSearch: "Sedang mencari lokasi GPS...", locError: "Gagal mengambil lokasi. Pastikan GPS aktif dan diizinkan (Allow) di browser!",
+            locHint: "💡 Tekan 📍 jika ingin menggunakan titik lokasimu saat ini."
+        },
+        en: {
+            loginTitle: "Welcome 👋", subtitle: "Authentic Local Services", loginDesc: "Enter your details to get started", lblNama: "Nickname", lblWa: "Active WhatsApp Number", noteWa: "⚠️ Ensure your WA number is active so the driver can contact you!", btnLogin: "Start Ordering 🚀", ph_nama: "Type here...", ph_wa: "Example: 0813xxxx", btnAdminLogin: "📞 Admin Help?",
+            greetPrefix: "Welcome back,", c1: "Pick-up / Drop-off", c2: "Delivery", c3: "Grocery Shopping", c4: "Cleaning", c5: "Custom Service", cat5sub: "Any other service you need", btnAdmin: "Chat", adminCtaTitle: "Need Admin Support?", adminCtaSub: "Chat directly via WhatsApp",
+            sectionLayanan: "Choose a Service", sectionPromo: "Promos & Info", heroTag: "AFFORDABLE", heroTitle: "Easy Orders,\nGreat Prices!", heroSub: "Helped by trusted, professional locals.", heroPriceSub: "/ kilometer",
+            promo1Tag: "FAST & READY", promo1Title: "Extra Fast Service!", promo1Sub: "Top priority for locals", promo2Tag: "FARE INFO", promo2Title: "Transparent Fares, Negotiate Direct!", promo2Sub: "Chat the driver via WhatsApp", promo3Tag: "24 HOURS", promo3Title: "Ready to Help Anytime!", promo3Sub: "Contact admin if you need help",
+            btnBack1: "Back", lblCatatan: "Additional Notes", btnOrder: "Submit Order 🚀", trackTitle: "Order Status", histTitle: "Order History", navHome: "Home", navOrder: "Orders", navHistory: "History", navProfile: "Profile", profTitle: "My Profile", btnLogout: "🚪 Logout", emptyOrder: "No active orders.", emptySub: "Please choose a service from Home",
+            profileOrders: "Order History", profileAdmin: "Contact Admin", profileAbout: "About App", profileShare: "Share App", profileInstall: "Install App", aocLabel: "Active Order", aocBtn: "📍 Track Order", btnDetail: "Order Details",
+            tarif1: "🚗 <b>Base Fare:</b> Rp 2,000 / Kilometer.<br>Final price via WA.", tarif2: "📦 <b>Delivery Fare:</b> Rp 2,000 / Kilometer.<br>Final price via WA.", tarif3: "🛒 <b>Service Fee:</b> Rp 2,000 / Kilometer.<br>Final price via WA.", tarif4: "🧹 <b>Cleaning Fee:</b> Flexible (Negotiable).<br>Please negotiate via WA.", tarif5: "✨ <b>Custom Service:</b> Flexible price (Negotiable).<br>Discuss via WA.",
+            t_formTitle: "Order Details", t_jemput: "Pick-up Location", t_antar: "Drop-off Location", t_ambil: "Pick up from", t_kirim: "Deliver to", t_daftar: "Shopping List", t_alamat: "Delivery Address", t_resik: "What needs cleaning?", t_lokasi: "Location Address", t_unik: "State Your Request", t_waktu: "Address / Time",
+            ph_jemput: "Example: Main Gate...", ph_antar: "Example: Station...", ph_ambil: "Example: My house...", ph_kirim: "Example: JNE...", ph_daftar: "Example: Buy satay...", ph_alamat: "Example: Deliver to...", ph_resik: "Example: Sweep yard...", ph_lokasi: "Example: House behind...", ph_unik: "Example: Move wardrobe...", ph_waktu: "Example: Today at 2 PM...",
+            templateWA: "Hello Admin, my name is [NAMA]. I have a question: ", installTxt: "Install App!", btnInstall: "INSTALL 📲", btnCancel: "❌ Cancel", btnComplete: "✅ Confirm Completed", ratingTitle: "How was the service?", ratingTitleResto: "How was the food?", ph_ulasan: "Write feedback (optional)...", btnRating: "Submit Rating ⭐",
+            btnHubungiDriver: "💬 Contact Driver", btnBatalGratis: "❌ Cancel (Free)", btnAjukanBatal: "Request Cancellation", btnBatalkanPermintaan: "Withdraw This Request",
+            txtMenungguBatal: "Cancellation request sent, waiting for driver approval.", noteBatalTerkunci: "*Driver's balance already deducted. Cancellation needs driver approval.",
+            catMakanan: "Order Food", catMakananSub: "Order food directly from nearby restaurants",
+            tarifMakanan: "🍜 <b>Delivery Fee:</b> Rp 2,000/km (same as ride-hailing), paid separately from food price.",
+            t_antarMakanan: "Delivery Address", ph_antarMakanan: "Full delivery address...",
+            statusMenungguResto: "Waiting Restaurant Confirmation", descMenungguResto: "Waiting for the restaurant to confirm your order.",
+            statusRestoTerima: "Restaurant Preparing Order", descRestoTerima: "Your order is being prepared, waiting for a driver to pick it up.",
+            statusDitolakResto: "Rejected by Restaurant",
+            status1: "Finding Driver...", desc1: "Please wait...", status2: "Driver Found!", desc2: "Driver will chat via WA.", status3: "Completed!", desc3: "Thank you!", status4: "Cancelled", desc4: "This order has been cancelled.", alertRating: "Thank you for your feedback!", pillDone: "Completed ✓", pillOngoing: "In Progress", emptyHistory: "No order history yet.",
+            aboutTagline: "Authentic Local Services", aboutH1: "About Us", aboutP1: "TulangTulung Gombong is an on-demand transport and daily service platform exclusively for locals. Bringing the concept of 'from residents, for residents'.",
+            aboutH2: "Mission", aboutP2: "<li style='margin-bottom:6px;'><b>Resident Needs:</b> Practical & fast service.</li><li style='margin-bottom:6px;'><b>Fair:</b> Zero percent commission, 100% to partners.</li><li style='margin-bottom:6px;'><b>Safe:</b> Served by verified local residents.</li>",
+            aboutH3: "Terms & Conditions", aboutP3: "TulangTulung is a connecting platform. For delivering high-value items, personal insurance is highly recommended. Any damage or loss of goods is entirely the responsibility between the driver partner and the customer.",
+            notifDiambil: "is ready to take your order", notifSelesai: "is completed. Don't forget to rate!",
+            adTitle: "Grow Your Business!", adDesc: "Professional App, Website & Management System Development.",
+            waDevMsg: "Hello Mr. Riski, I found your contact from the TulangTulung Gombong app. I am interested in discussing App/Website development for my business.",
+            locSearch: "Searching GPS location...", locError: "Failed to get location. Turn on GPS and Allow permission in browser!",
+            locHint: "💡 Tap 📍 to use your current location."
+        }
+    };
+
+    window.setLang = function(langKey) {
+        currentLang = langKey;
+        // Panggil ke semua tombol global
+        document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.lang-' + langKey).forEach(el => el.classList.add('active'));
+        const t = langDict[langKey];
+        
+        setText('ui-login-title', t.loginTitle); setText('ui-subtitle', t.subtitle); setText('ui-login-desc', t.loginDesc);
+        setText('ui-label-nama', t.lblNama); setText('ui-label-wa', t.lblWa); setText('ui-note-wa', t.noteWa); setText('ui-btn-login', t.btnLogin);
+        document.getElementById('inputNama').placeholder = t.ph_nama; document.getElementById('inputWA').placeholder = t.ph_wa;
+        setText('ui-btn-admin-login', t.btnAdminLogin); setText('ui-greet-prefix', t.greetPrefix);
+        ['c1','c2','c3','c4','c5'].forEach((c,i) => setText(`cat-${i+1}`, t[c])); setText('ui-cat5-sub', t.cat5sub);
+        setText('cat-makanan', t.catMakanan); setText('ui-cat-makanan-sub', t.catMakananSub);
+        setText('ui-btn-admin', t.btnAdmin); setText('ui-admin-cta-title', t.adminCtaTitle); setText('ui-admin-cta-sub', t.adminCtaSub);
+        setText('ui-section-layanan', t.sectionLayanan); setText('ui-section-promo', t.sectionPromo);
+        setText('ui-hero-tag', t.heroTag); setText('ui-hero-title', t.heroTitle); setText('ui-hero-sub', t.heroSub); setText('ui-hero-price-sub', t.heroPriceSub);
+        setText('ui-promo1-tag', t.promo1Tag); setText('ui-promo1-title', t.promo1Title); setText('ui-promo1-sub', t.promo1Sub);
+        setText('ui-promo2-tag', t.promo2Tag); setText('ui-promo2-title', t.promo2Title); setText('ui-promo2-sub', t.promo2Sub);
+        setText('ui-promo3-tag', t.promo3Tag); setText('ui-promo3-title', t.promo3Title); setText('ui-promo3-sub', t.promo3Sub);
+        setText('ui-label-catatan', t.lblCatatan); setText('btnKirim', t.btnOrder);
+        setText('ui-track-title', t.trackTitle); 
+        setText('ui-empty-order', t.emptyOrder); setText('ui-empty-sub', t.emptySub);
+        setText('ui-history-title', t.histTitle); setText('ui-btn-logout', t.btnLogout);
+        setText('ui-profile-orders', t.profileOrders); setText('ui-profile-admin', t.profileAdmin);
+        setText('ui-profile-about', t.profileAbout); setText('ui-profile-share', t.profileShare); setText('ui-profile-install', t.profileInstall);
+        setText('nav-home', t.navHome); setText('nav-order', t.navOrder); setText('nav-history', t.navHistory); setText('nav-profile', t.navProfile);
+        setText('ui-install-txt', t.installTxt); setText('btn-install-pwa', t.btnInstall);
+
+        setText('ui-about-topbar', t.profileAbout); setText('ui-about-tagline', t.aboutTagline);
+        setText('ui-about-h1', t.aboutH1); setText('ui-about-p1', t.aboutP1);
+        setText('ui-about-h2', t.aboutH2); setHTML('ui-about-p2', t.aboutP2);
+        setText('ui-about-h3', t.aboutH3); setHTML('ui-about-p3', t.aboutP3);
+
+        setText('ui-ad-title', t.adTitle); setText('ui-ad-desc', t.adDesc);
+        
+        // Petunjuk Tombol Lokasi (GPS)
+        setText('ui-loc-hint1', t.locHint); setText('ui-loc-hint2', t.locHint);
+
+        if(userAktif.wa !== "") pantauDataPesenanWarga();
+        if(!document.getElementById('page-form').classList.contains('hidden')) bukaForm(layananAktif);
+    }
+
+    function setText(id, val) { const el = document.getElementById(id); if(el) el.innerText = val; }
+    function setHTML(id, val) { const el = document.getElementById(id); if(el) el.innerHTML = val; }
+
+    const installBanner = document.getElementById('install-banner');
+    const rowInstallApp = document.getElementById('row-install-app');
+    let deferredPrompt = null;
+    
+    if (!window.matchMedia('(display-mode: standalone)').matches && window.navigator.standalone !== true) {
+        if(installBanner) installBanner.style.display = 'block';
+        if(rowInstallApp) rowInstallApp.style.display = 'flex';
+    } else {
+        if(installBanner) installBanner.style.display = 'none';
+        if(rowInstallApp) rowInstallApp.style.display = 'none';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => { 
+        e.preventDefault(); deferredPrompt = e; 
+        if(installBanner) installBanner.style.display = 'block';
+        if(rowInstallApp) rowInstallApp.style.display = 'flex';
+    });
+    
+    window.installAplikasi = async function() {
+        if(deferredPrompt) { 
+            deferredPrompt.prompt(); 
+            const { outcome } = await deferredPrompt.userChoice; 
+            if (outcome === 'accepted') { 
+                if(installBanner) installBanner.style.display = 'none'; 
+                if(rowInstallApp) rowInstallApp.style.display = 'none'; 
+            } 
+            deferredPrompt = null; 
+        } else { 
+            alert(currentLang === 'id' ? "Untuk menginstal, klik menu browser (titik tiga) lalu pilih 'Tambahkan ke Layar Utama'." : "Nggo masang aplikasi, klik menu browser terus pilih 'Tambahkan ke Layar Utama'."); 
+        }
+    }
+
+    window.addEventListener('appinstalled', () => { 
+        if(installBanner) installBanner.style.display = 'none'; 
+        if(rowInstallApp) rowInstallApp.style.display = 'none'; deferredPrompt = null; 
+    });
+
+    window.navigasiKe = function(tab) {
+        ['page-home','page-form','page-resto-list','page-resto-menu','page-tracking','page-history','page-profile','page-about'].forEach(p => { const el = document.getElementById(p); if(el) el.classList.add('hidden'); });
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const pageMap = { home:'page-home', order:'page-tracking', history:'page-history', profile:'page-profile' };
+        const tabMap = { home:'tab-home', order:'tab-order', history:'tab-history', profile:'tab-profile' };
+        if(pageMap[tab]) document.getElementById(pageMap[tab]).classList.remove('hidden');
+        if(tabMap[tab]) document.getElementById(tabMap[tab]).classList.add('active');
+        document.getElementById('bottom-nav').classList.add('visible'); // tab utama selalu tampil bottom-nav
+    }
+
+    window.bukaTentang = function() { document.getElementById('page-profile').classList.add('hidden'); document.getElementById('page-about').classList.remove('hidden'); }
+    window.tutupTentang = function() { document.getElementById('page-about').classList.add('hidden'); document.getElementById('page-profile').classList.remove('hidden'); }
+    
+    window.bagikanAplikasi = function() { 
+        const textShare = currentLang === 'en' ? 'Try TulangTulung Gombong app!' : 'Ayo jajal aplikasi TulangTulung Gombong! Solusi layanan harian asli wong kene.'; 
+        const shareData = { title: 'TulangTulung Gombong', text: textShare, url: window.location.href }; 
+        if (navigator.share) { navigator.share(shareData).catch(err => console.log('Gagal:', err)); } else { navigator.clipboard.writeText(window.location.href); alert(currentLang==='en'?'Link copied!':'Link berhasil disalin!'); } 
+    }
+    
+    window.chatAdminTemplate = function() { 
+        const nama = userAktif.nama || "Pelanggan"; 
+        const pesan = langDict[currentLang].templateWA.replace("[NAMA]", nama); 
+        window.open(`https://wa.me/${NOMOR_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank'); 
+    }
+    window.chatAdminLoginPage = function() { window.open(`https://wa.me/${NOMOR_ADMIN}?text=${encodeURIComponent("Halo Admin TulangTulung Gombong, nyong arep takon.")}`, '_blank'); }
+
+    window.hubungiDeveloper = function() {
+        const msg = langDict[currentLang].waDevMsg;
+        window.open(`https://wa.me/${NOMOR_DEVELOPER}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+    
+    window.masukAplikasi = function() {
+        const nama = document.getElementById('inputNama').value.trim();
+        const wa = document.getElementById('inputWA').value.trim();
+        if(!nama || !wa) { alert(currentLang==='en'?"Please fill all fields!":"Data kudu diisi kabeh lur!"); return; }
+        
+        userAktif = { nama, wa };
+        localStorage.setItem('ttg_customer', JSON.stringify(userAktif));
+        
+        document.getElementById('displayNama').innerText = nama;
+        document.getElementById('profileNama').innerText = nama;
+        document.getElementById('profileWA').innerText = wa;
+        document.getElementById('page-login').classList.add('hidden');
+        document.getElementById('app-main').classList.remove('hidden');
+        navigasiKe('home');
+        pantauDataPesenanWarga();
+        setupPushNotification();
+    }
+
+    window.kaluarAplikasi = function() {
+        if(confirm(currentLang==='en'?'Are you sure you want to logout?':(currentLang==='ngapak'?'Tenane arep metu (logout)?':'Yakin badé kaluar?'))) {
+            localStorage.removeItem('ttg_customer');
+            userAktif = { nama:"", wa:"" }; 
+            document.getElementById('inputNama').value = "";
+            document.getElementById('inputWA').value = "";
+            document.getElementById('app-main').classList.add('hidden');
+            document.getElementById('page-login').classList.remove('hidden');
+        }
+    }
+
+    window.bukaForm = function(kat) {
+        layananAktif = kat;
+        const t = langDict[currentLang];
+        let label1, label2, tarifHTML, ph1, ph2;
+
+        if(kat==='Antar Jemput'){label1=t.t_jemput;label2=t.t_antar;tarifHTML=t.tarif1;ph1=t.ph_jemput;ph2=t.ph_antar;}
+        else if(kat==='Kirim Barang'){label1=t.t_ambil;label2=t.t_kirim;tarifHTML=t.tarif2;ph1=t.ph_ambil;ph2=t.ph_kirim;}
+        else if(kat==='Titip Belanja'){label1=t.t_daftar;label2=t.t_alamat;tarifHTML=t.tarif3;ph1=t.ph_daftar;ph2=t.ph_alamat;}
+        else if(kat==='Bantu Bersih'){label1=t.t_resik;label2=t.t_lokasi;tarifHTML=t.tarif4;ph1=t.ph_resik;ph2=t.ph_lokasi;}
+        else{label1=t.t_unik;label2=t.t_waktu;tarifHTML=t.tarif5;ph1=t.ph_unik;ph2=t.ph_waktu;}
+
+        document.getElementById('judulFormTitle').innerText = t.t_formTitle + ' — ' + (kat==='Antar Jemput'?t.c1:kat==='Kirim Barang'?t.c2:kat==='Titip Belanja'?t.c3:kat==='Bantu Bersih'?t.c4:t.c5);
+        document.getElementById('labelDetail1').innerText = label1;
+        document.getElementById('labelDetail2').innerText = label2;
+        document.getElementById('boxInfoTarif').innerHTML = tarifHTML;
+        document.getElementById('inputDetail1').placeholder = ph1;
+        document.getElementById('inputDetail2').placeholder = ph2;
+        document.getElementById('inputDetail1').value = '';
+        document.getElementById('inputDetail2').value = '';
+        document.getElementById('inputCatatan').value = '';
+
+        // Pastikan tampilan form kembali normal (kalau sebelumnya sempat di alur Pesan Makanan)
+        document.getElementById('groupDetail1').classList.remove('hidden');
+        document.getElementById('boxKeranjangMakanan').classList.add('hidden');
+
+        // Reset koordinat & estimasi jarak dari order sebelumnya (kalau ada & belum dikirim)
+        window._mapCoords = {};
+        const boxEst = document.getElementById('boxEstimasiJarak');
+        if (boxEst) boxEst.classList.add('hidden');
+        sembunyikanPreviewRute();
+
+        document.getElementById('page-home').classList.add('hidden');
+        document.getElementById('page-form').classList.remove('hidden');
+        document.getElementById('bottom-nav').classList.remove('visible');
+    }
+
+    window.kembaliKeMenu = function() {
+        document.getElementById('page-form').classList.add('hidden');
+        if (layananAktif === 'Pesan Makanan') {
+            document.getElementById('page-resto-menu').classList.remove('hidden');
+        } else {
+            navigasiKe('home');
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //   PESAN MAKANAN — daftar resto, menu, keranjang, checkout
+    // ═══════════════════════════════════════════════════════════
+    let _cartMakanan = { resto_id: null, resto_nama: '', resto_alamat: '', resto_lat: null, resto_lng: null, items: {} };
+    let _menuRestoAktif = {}; // cache menu resto yang sedang dibuka, keyed by menuId
+
+    window.bukaDaftarResto = function() {
+        document.getElementById('page-home').classList.add('hidden');
+        document.getElementById('page-resto-list').classList.remove('hidden');
+        document.getElementById('bottom-nav').classList.remove('visible');
+        renderDaftarResto();
+    }
+
+    window.kembaliDariDaftarResto = function() {
+        document.getElementById('page-resto-list').classList.add('hidden');
+        navigasiKe('home'); // navigasiKe otomatis tampilkan lagi bottom-nav
+    }
+
+    let _sortRestoAktif = 'default'; // default | rating | nama
+    let _daftarRestoCache = [];
+
+    function renderBintangResto(r) {
+        const count = r.rating_count || 0;
+        if (count === 0) {
+            return `<span class="resto-card-baru-badge">✨ Baru</span>`;
+        }
+        const avg = (r.rating_total / count).toFixed(1);
+        return `⭐ ${avg} <span style="color:var(--text3); font-weight:600;">(${count} ulasan)</span>`;
+    }
+
+    function renderDaftarResto() {
+        const wrap = document.getElementById('listRestoWrap');
+        const keyword = (document.getElementById('inputCariResto')?.value || '').trim().toLowerCase();
+
+        const tampilkan = () => {
+            let daftar = _daftarRestoCache.slice();
+            if (keyword) daftar = daftar.filter(r => r.nama.toLowerCase().includes(keyword));
+
+            if (_sortRestoAktif === 'rating') {
+                daftar.sort((a, b) => {
+                    const avgA = a.rating_count ? a.rating_total / a.rating_count : -1;
+                    const avgB = b.rating_count ? b.rating_total / b.rating_count : -1;
+                    return avgB - avgA;
+                });
+            } else if (_sortRestoAktif === 'nama') {
+                daftar.sort((a, b) => a.nama.localeCompare(b.nama));
+            }
+
+            if (daftar.length === 0) {
+                wrap.innerHTML = keyword
+                    ? `<div class="resto-empty">🔍 Warung "${keyword}" ora ketemu.</div>`
+                    : `<div class="resto-empty">🍜 Belum ada warung yang buka saat ini. Coba lagi nanti ya.</div>`;
+                return;
+            }
+            wrap.innerHTML = '';
+            daftar.forEach(r => {
+                const card = document.createElement('div');
+                card.className = 'resto-card';
+                card.onclick = () => bukaMenuResto(r.wa);
+                const bannerHtml = r.foto_profil
+                    ? `<img class="resto-card-banner" src="${r.foto_profil}" onerror="this.outerHTML='<div class=&quot;resto-card-banner-fallback&quot;>🍜</div>'">`
+                    : `<div class="resto-card-banner-fallback">🍜</div>`;
+                card.innerHTML = `
+                    ${bannerHtml}
+                    <div class="resto-card-body">
+                        <div class="resto-card-top-row">
+                            <div class="resto-card-nama">${r.nama}</div>
+                        </div>
+                        <div class="resto-card-rating-row">${renderBintangResto(r)}</div>
+                        <div class="resto-card-alamat">📍 ${r.alamat || '-'}</div>
+                    </div>
+                `;
+                wrap.appendChild(card);
+            });
+        };
+
+        if (_daftarRestoCache.length === 0) {
+            onValue(ref(database, 'restoran'), snap => {
+                const data = snap.val() || {};
+                _daftarRestoCache = Object.keys(data)
+                    .map(wa => ({ wa, ...data[wa] }))
+                    .filter(r => r.status === 'aktif' && r.buka !== false);
+                tampilkan();
+            }, { onlyOnce: false });
+        } else {
+            tampilkan();
+        }
+    }
+
+    window.bukaModalSort = function() {
+        const opsi = [
+            { key: 'default', label: '📋 Bawaan' },
+            { key: 'rating', label: '⭐ Rating Tertinggi' },
+            { key: 'nama', label: '🔤 Nama A-Z' }
+        ];
+        document.getElementById('listSortOption').innerHTML = opsi.map(o => `
+            <div class="sort-option ${_sortRestoAktif === o.key ? 'active' : ''}" onclick="pilihSortResto('${o.key}')">
+                <span>${o.label}</span>${_sortRestoAktif === o.key ? '<span>✓</span>' : ''}
+            </div>
+        `).join('');
+        document.getElementById('modal-sort-resto').classList.remove('hidden');
+    }
+
+    window.tutupModalSort = function() {
+        document.getElementById('modal-sort-resto').classList.add('hidden');
+    }
+
+    window.pilihSortResto = function(key) {
+        _sortRestoAktif = key;
+        tutupModalSort();
+        renderDaftarResto();
+    }
+
+    window.kembaliKeDaftarResto = function() {
+        document.getElementById('page-resto-menu').classList.add('hidden');
+        document.getElementById('page-resto-list').classList.remove('hidden');
+    }
+
+    window.bukaMenuResto = function(waResto) {
+        // Reset keranjang kalau pindah ke resto yang BEDA dari sebelumnya
+        if (_cartMakanan.resto_id !== waResto) {
+            _cartMakanan = { resto_id: waResto, resto_nama: '', resto_alamat: '', resto_lat: null, resto_lng: null, items: {} };
+        }
+        document.getElementById('page-resto-list').classList.add('hidden');
+        document.getElementById('page-resto-menu').classList.remove('hidden');
+        document.getElementById('listMenuRestoWrap').innerHTML = `<div class="resto-empty">⏳ Memuat menu...</div>`;
+
+        onValue(ref(database, 'restoran/' + waResto), snap => {
+            const r = snap.val();
+            if (!r) return;
+            _cartMakanan.resto_nama = r.nama;
+            _cartMakanan.resto_alamat = r.alamat || '';
+            _cartMakanan.resto_lat = r.lat || null;
+            _cartMakanan.resto_lng = r.lng || null;
+            document.getElementById('judulMenuResto').innerText = r.nama;
+            _menuRestoAktif = r.menu || {};
+            renderMenuResto();
+            updateCartFloatBar();
+        }, { onlyOnce: false });
+    }
+
+    function jumlahDiKeranjangUntukMenu(menuId) {
+        return Object.entries(_cartMakanan.items).reduce((sum, [key, it]) => {
+            const idAsli = key.split('#')[0];
+            return idAsli === menuId ? sum + it.qty : sum;
+        }, 0);
+    }
+
+    function renderMenuResto() {
+        const wrap = document.getElementById('listMenuRestoWrap');
+        const keys = Object.keys(_menuRestoAktif).filter(id => _menuRestoAktif[id].tersedia !== false);
+        if (keys.length === 0) {
+            wrap.innerHTML = `<div class="resto-empty">📋 Resto ini belum ada menu yang tersedia.</div>`;
+            return;
+        }
+        wrap.innerHTML = '';
+        keys.forEach(id => {
+            const m = _menuRestoAktif[id];
+            const punyaOpsi = m.opsi && m.opsi.length > 0;
+            const adaDiskon = m.harga_coret && m.harga_coret > m.harga;
+            const persenDiskon = adaDiskon ? Math.round((1 - m.harga / m.harga_coret) * 100) : 0;
+            const hargaHtml = adaDiskon
+                ? `<span class="menu-cust-harga-coret">${formatRupiah(m.harga_coret)}</span><span class="menu-cust-harga">${formatRupiah(m.harga)}</span><span class="badge-diskon-cust">-${persenDiskon}%</span>`
+                : `<span class="menu-cust-harga">${formatRupiah(m.harga)}</span>`;
+
+            const card = document.createElement('div');
+            card.className = 'menu-cust-card';
+            card.id = 'menucard-' + id;
+
+            let kananHtml;
+            if (punyaOpsi) {
+                const qtyTotal = jumlahDiKeranjangUntukMenu(id);
+                kananHtml = `
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                        <button class="btn-pilih-opsi" onclick="bukaModalOpsiMenu('${id}')">➕ Pilih</button>
+                        ${qtyTotal > 0 ? `<span class="badge-qty-opsi">${qtyTotal} di keranjang</span>` : ''}
+                    </div>`;
+            } else {
+                const qty = _cartMakanan.items[id]?.qty || 0;
+                kananHtml = `
+                    <div class="qty-stepper">
+                        <button class="qty-btn" onclick="ubahJumlahItem('${id}', -1)">−</button>
+                        <span class="qty-val" id="qtyval-${id}">${qty}</span>
+                        <button class="qty-btn" onclick="ubahJumlahItem('${id}', 1)">+</button>
+                    </div>`;
+            }
+
+            card.innerHTML = `
+                <img class="menu-cust-photo" src="${m.foto || 'https://placehold.co/100x100?text=🍽️'}" onerror="this.src='https://placehold.co/100x100?text=🍽️'">
+                <div class="menu-cust-info">
+                    <div class="menu-cust-nama">${m.nama}</div>
+                    <div class="menu-cust-harga-row">${hargaHtml}</div>
+                    ${punyaOpsi ? `<div style="font-size:10.5px; color:var(--text3); font-weight:600; margin-top:2px;">🔧 Ada pilihan (${m.opsi.map(g=>g.nama).join(', ')})</div>` : ''}
+                </div>
+                ${kananHtml}
+            `;
+            wrap.appendChild(card);
+        });
+    }
+
+    window.ubahJumlahItem = function(id, delta) {
+        const m = _menuRestoAktif[id];
+        if (!m) return;
+        const skrg = _cartMakanan.items[id]?.qty || 0;
+        const baru = Math.max(0, skrg + delta);
+        if (baru === 0) { delete _cartMakanan.items[id]; }
+        else { _cartMakanan.items[id] = { nama: m.nama, harga: m.harga, qty: baru }; }
+        const qtyEl = document.getElementById('qtyval-' + id);
+        if (qtyEl) qtyEl.textContent = baru;
+        updateCartFloatBar();
+    }
+
+    // ── MODAL PILIH OPSI/VARIAN MENU ──
+    let _opsiModalState = { menuId: null, pilihan: {}, qty: 1 };
+
+    window.bukaModalOpsiMenu = function(menuId) {
+        const m = _menuRestoAktif[menuId];
+        if (!m) return;
+        _opsiModalState = { menuId, pilihan: {}, qty: 1 };
+        document.getElementById('opsiModalFoto').src = m.foto || 'https://placehold.co/100x100?text=🍽️';
+        document.getElementById('opsiModalNama').innerText = m.nama;
+        const adaDiskon = m.harga_coret && m.harga_coret > m.harga;
+        document.getElementById('opsiModalHargaRow').innerHTML = adaDiskon
+            ? `<span class="menu-cust-harga-coret">${formatRupiah(m.harga_coret)}</span><span class="menu-cust-harga">${formatRupiah(m.harga)}</span>`
+            : `<span class="menu-cust-harga">${formatRupiah(m.harga)}</span>`;
+        document.getElementById('opsiModalQty').textContent = '1';
+        renderModalOpsiGrup();
+        updateTotalModalOpsi();
+        document.getElementById('modal-opsi-menu').classList.remove('hidden');
+    }
+
+    window.tutupModalOpsiMenu = function() { document.getElementById('modal-opsi-menu').classList.add('hidden'); }
+
+    function renderModalOpsiGrup() {
+        const m = _menuRestoAktif[_opsiModalState.menuId];
+        const wrap = document.getElementById('opsiModalGrupList');
+        wrap.innerHTML = (m.opsi || []).map((grup, gi) => `
+            <div class="opsi-grup-title">
+                <span>${grup.nama}</span>
+                ${grup.wajib ? '<span class="opsi-grup-wajib-tag">Wajib pilih</span>' : '<span class="opsi-grup-opsional-tag">Opsional</span>'}
+            </div>
+            ${grup.pilihan.map((p, pi) => `
+                <div class="opsi-pilihan-row" onclick="pilihOpsiMenu(${gi}, ${pi}, '${grup.tipe}')">
+                    <span class="opsi-pilihan-nama">
+                        <input type="${grup.tipe === 'multi' ? 'checkbox' : 'radio'}" name="grup-opsi-${gi}" id="opsi-${gi}-${pi}" style="margin-right:8px; pointer-events:none;">
+                        ${p.nama}
+                    </span>
+                    <span class="opsi-pilihan-tambahan">${p.tambahan > 0 ? '+' + formatRupiah(p.tambahan) : ''}</span>
+                </div>
+            `).join('')}
+        `).join('');
+    }
+
+    window.pilihOpsiMenu = function(gi, pi, tipe) {
+        if (!_opsiModalState.pilihan[gi]) _opsiModalState.pilihan[gi] = [];
+        if (tipe === 'multi') {
+            const idx = _opsiModalState.pilihan[gi].indexOf(pi);
+            if (idx > -1) _opsiModalState.pilihan[gi].splice(idx, 1); else _opsiModalState.pilihan[gi].push(pi);
+        } else {
+            _opsiModalState.pilihan[gi] = [pi];
+        }
+        // Sinkronkan tampilan centang/radio
+        const m = _menuRestoAktif[_opsiModalState.menuId];
+        m.opsi[gi].pilihan.forEach((_, i) => {
+            const el = document.getElementById(`opsi-${gi}-${i}`);
+            if (el) el.checked = _opsiModalState.pilihan[gi].includes(i);
+        });
+        updateTotalModalOpsi();
+    }
+
+    window.ubahQtyModalOpsi = function(delta) {
+        _opsiModalState.qty = Math.max(1, _opsiModalState.qty + delta);
+        document.getElementById('opsiModalQty').textContent = _opsiModalState.qty;
+        updateTotalModalOpsi();
+    }
+
+    function hitungHargaSatuanOpsi() {
+        const m = _menuRestoAktif[_opsiModalState.menuId];
+        let tambahan = 0;
+        Object.entries(_opsiModalState.pilihan).forEach(([gi, pilihanArr]) => {
+            pilihanArr.forEach(pi => { tambahan += m.opsi[gi].pilihan[pi].tambahan || 0; });
+        });
+        return m.harga + tambahan;
+    }
+
+    function updateTotalModalOpsi() {
+        const total = hitungHargaSatuanOpsi() * _opsiModalState.qty;
+        document.getElementById('opsiModalTotalHarga').textContent = formatRupiah(total);
+    }
+
+    window.tambahKeKeranjangDenganOpsi = function() {
+        const m = _menuRestoAktif[_opsiModalState.menuId];
+        // Validasi semua grup wajib sudah dipilih
+        for (let gi = 0; gi < (m.opsi || []).length; gi++) {
+            if (m.opsi[gi].wajib && (!_opsiModalState.pilihan[gi] || _opsiModalState.pilihan[gi].length === 0)) {
+                alert(`Mohon pilih "${m.opsi[gi].nama}" dulu ya.`);
+                return;
+            }
+        }
+        const opsiTerpilihTeks = (m.opsi || [])
+            .filter((g, gi) => _opsiModalState.pilihan[gi] && _opsiModalState.pilihan[gi].length > 0)
+            .map((g, gi) => `${g.nama}: ${_opsiModalState.pilihan[gi].map(pi => g.pilihan[pi].nama).join(', ')}`)
+            .join(' | ');
+        const hargaSatuan = hitungHargaSatuanOpsi();
+
+        // Gabungkan dengan baris keranjang yang persis sama kombinasinya (biar gak numpuk baris duplikat)
+        const kunciKombinasi = (_opsiModalState.menuId + '_' + JSON.stringify(_opsiModalState.pilihan)).replace(/[.#$\/\[\]"]/g, '_');
+        if (_cartMakanan.items[kunciKombinasi]) {
+            _cartMakanan.items[kunciKombinasi].qty += _opsiModalState.qty;
+        } else {
+            _cartMakanan.items[kunciKombinasi] = { nama: m.nama, harga: hargaSatuan, qty: _opsiModalState.qty, opsi_text: opsiTerpilihTeks };
+        }
+        tutupModalOpsiMenu();
+        renderMenuResto();
+        updateCartFloatBar();
+    }
+
+    // Biaya Layanan: markup dari aplikasi di atas harga asli resto (harga asli resto tetap utuh,
+    // driver tetap bayar resto sejumlah harga asli -- markup ini murni margin aplikasi).
+    // Dihitung per ITEM (per qty), bukan per orderan -- jadi order isi 5 item = Rp 5.000, order isi 1 item = Rp 1.000.
+    const BIAYA_LAYANAN_PER_ITEM = 1000;
+    // Biaya layanan flat untuk order NON-makanan (Antar Jemput, Kirim Barang, Titip
+    // Belanja, Bantu Bersih, dll) -- disamakan konsepnya dengan biaya layanan makanan:
+    // dibayar customer (cash ke driver), lalu dipotong lagi dari saldo driver saat
+    // order selesai (lihat selesaikanOrderanDriver di driver.html), jadi efeknya jadi
+    // pendapatan admin, bukan beban driver sendirian.
+    const BIAYA_LAYANAN_JASA = 1000;
+
+    function hitungSubtotalKeranjang() {
+        return Object.values(_cartMakanan.items).reduce((sum, it) => sum + (it.harga * it.qty), 0);
+    }
+
+    function hitungTotalItemKeranjang() {
+        return Object.values(_cartMakanan.items).reduce((sum, it) => sum + it.qty, 0);
+    }
+
+    function hitungBiayaLayanan() {
+        return hitungTotalItemKeranjang() * BIAYA_LAYANAN_PER_ITEM;
+    }
+
+    function hitungTotalMakanan() {
+        return hitungSubtotalKeranjang() + hitungBiayaLayanan();
+    }
+
+    function updateCartFloatBar() {
+        const bar = document.getElementById('cartFloatBar');
+        const totalItem = Object.values(_cartMakanan.items).reduce((sum, it) => sum + it.qty, 0);
+        if (totalItem === 0) { bar.classList.add('hidden'); return; }
+        bar.classList.remove('hidden');
+        document.getElementById('txtCartInfo').textContent = totalItem + ' item';
+        document.getElementById('txtCartTotal').textContent = formatRupiah(hitungTotalMakanan());
+    }
+
+    function renderKeranjangBoxItems() {
+        document.getElementById('txtKeranjangResto').textContent = '🍜 ' + _cartMakanan.resto_nama;
+        const listEl = document.getElementById('listKeranjangItems');
+        listEl.innerHTML = Object.entries(_cartMakanan.items)
+            .map(([key, it]) => `
+                <div class="keranjang-item-row-wrap">
+                    <div style="flex:1; min-width:0;">
+                        <div class="keranjang-item-row" style="padding:0;"><span>${it.qty}x ${it.nama}</span><span>${formatRupiah(it.harga * it.qty)}</span></div>
+                        ${it.opsi_text ? `<div class="keranjang-item-opsi-text">${it.opsi_text}</div>` : ''}
+                    </div>
+                    <button class="btn-hapus-item-kecil" onclick="hapusItemKeranjang('${key}')">✕</button>
+                </div>`)
+            .join('');
+        document.getElementById('txtKeranjangSubtotal').textContent = formatRupiah(hitungSubtotalKeranjang());
+        document.getElementById('txtKeranjangBiayaLayanan').textContent = formatRupiah(hitungBiayaLayanan());
+        document.getElementById('txtKeranjangTotal').textContent = formatRupiah(hitungTotalMakanan());
+    }
+
+    window.hapusItemKeranjang = function(key) {
+        delete _cartMakanan.items[key];
+        renderKeranjangBoxItems();
+        updateCartFloatBar();
+        // Kalau keranjang jadi kosong total, balik ke halaman menu biar gak nyangkut di kotak keranjang kosong.
+        if (Object.keys(_cartMakanan.items).length === 0) kembaliKeMenu();
+    }
+
+    window.lanjutKeCheckoutMakanan = function() {
+        if (Object.keys(_cartMakanan.items).length === 0) return;
+        if (!_cartMakanan.resto_lat || !_cartMakanan.resto_lng) {
+            alert('Maaf, resto ini belum mengatur titik lokasinya sehingga ongkos antar belum bisa dihitung. Coba pilih resto lain dulu ya, atau hubungi admin.');
+            return;
+        }
+        layananAktif = 'Pesan Makanan';
+        const t = langDict[currentLang];
+
+        document.getElementById('judulFormTitle').innerText = (t.t_formTitle || 'Detail Pesanan') + ' — 🍜 Pesan Makanan';
+        document.getElementById('boxInfoTarif').innerHTML = t.tarifMakanan || '🍜 <b>Ongkos Antar:</b> Rp 2.000/km (sama seperti Antar Jemput), dibayar terpisah dari harga makanan.';
+        document.getElementById('labelDetail2').innerText = t.t_antarMakanan || 'Alamat Pengantaran';
+        document.getElementById('inputDetail2').placeholder = t.ph_antarMakanan || 'Alamat lengkap tujuan pengantaran...';
+        document.getElementById('inputDetail2').value = '';
+        document.getElementById('inputCatatan').value = '';
+
+        document.getElementById('groupDetail1').classList.add('hidden');
+        document.getElementById('boxKeranjangMakanan').classList.remove('hidden');
+        renderKeranjangBoxItems();
+
+        // Titik jemput (resto) sudah pasti -- pre-isi koordinatnya. Customer tinggal pilih titik antar (detail2).
+        window._mapCoords = { detail1: { lat: _cartMakanan.resto_lat, lng: _cartMakanan.resto_lng } };
+        document.getElementById('boxEstimasiJarak').classList.add('hidden');
+        sembunyikanPreviewRute();
+
+        document.getElementById('page-resto-menu').classList.add('hidden');
+        document.getElementById('page-form').classList.remove('hidden');
+    }
+
+    // ── FUNGSI AMBIL LOKASI (GPS) ──
+    window.ambilLokasiAkurat = function(inputId) {
+        const t = langDict[currentLang];
+        const inputEl = document.getElementById(inputId);
+        
+        if (!navigator.geolocation) {
+            alert(t.locError || "GPS tidak didukung oleh browser Anda.");
+            return;
+        }
+
+        const oldVal = inputEl.value;
+        inputEl.value = t.locSearch || "Sedang mencari lokasi...";
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                
+                if(oldVal.trim() !== "") {
+                    inputEl.value = oldVal + "\nLokasi GPS: " + mapsUrl;
+                } else {
+                    inputEl.value = mapsUrl;
+                }
+            },
+            (error) => {
+                inputEl.value = oldVal; 
+                alert(t.locError || "Gagal mengambil lokasi. Pastikan GPS aktif dan izin diberikan.");
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+
+    let _latestOrdersCust = []; // dipakai buat re-render berkala (live countdown batal gratis)
+
+    function pantauDataPesenanWarga() {
+        if(userAktif.wa === "") return;
+        onValue(ref(database, 'orders'), (snap) => {
+            const arr = [];
+            snap.forEach(c => {
+                let obj = c.val();
+                obj.id = c.key;
+                if(obj.customer_wa === userAktif.wa) { arr.push(obj); }
+            });
+            arr.reverse();
+            _latestOrdersCust = arr;
+            cekPerubahanStatusDanNotif(arr);
+            renderHalamanHome(arr);
+            renderHalamanTracking(arr);
+            renderHalamanRiwayat(arr);
+        });
+        // Re-render tracking tiap 5 detik supaya hitung mundur "batal gratis Xs lagi" jalan
+        // walau tidak ada perubahan data baru dari Firebase.
+        if (!window._trackingCountdownTimer) {
+            window._trackingCountdownTimer = setInterval(() => {
+                const adaDiambilBelumMintaBatal = _latestOrdersCust.some(o => o.status === 'diambil' && !o.minta_batal_customer);
+                if (adaDiambilBelumMintaBatal) renderHalamanTracking(_latestOrdersCust);
+            }, 5000);
+        }
+    }
+
+    function renderHalamanHome(orders) {
+        const t = langDict[currentLang];
+        const listDiv = document.getElementById('home-active-list');
+        listDiv.innerHTML = '';
+        
+        const active = orders.filter(o => o.status === 'terbuka' || o.status === 'diambil');
+        
+        if(active.length > 0) {
+            active.forEach(data => {
+                const isDiambil = data.status === 'diambil';
+                const statusText = isDiambil ? t.status2 : t.status1;
+                const descText = isDiambil ? t.desc2 : t.desc1;
+                const card = document.createElement('div');
+                card.className = 'active-order-card';
+                card.innerHTML = `
+                    <div class="aoc-header">
+                        <div class="aoc-dot"></div>
+                        <div class="aoc-label">${data.layanan}</div>
+                    </div>
+                    <div class="aoc-status">${statusText}</div>
+                    <div class="aoc-desc">${descText}</div>
+                    <button class="aoc-btn" onclick="navigasiKe('order')">📍 ${t.aocBtn}</button>
+                `;
+                listDiv.appendChild(card);
+            });
+        }
+    }
+
+    function renderHalamanTracking(orders) {
+        const t = langDict[currentLang];
+        const listDiv = document.getElementById('tracking-list');
+        const emptyDiv = document.getElementById('tracking-empty');
+        listDiv.innerHTML = '';
+
+        const activeOrUnrated = orders.filter(o => o.status === 'terbuka' || o.status === 'menunggu_resto' || o.status === 'diterima_resto' || o.status === 'diambil' || (o.status === 'selesai' && (!o.rating || (o.layanan === 'Pesan Makanan' && o.resto_id && !o.rating_resto))));
+
+        if(activeOrUnrated.length === 0) {
+            listDiv.classList.add('hidden');
+            emptyDiv.classList.remove('hidden');
+            return;
+        }
+
+        listDiv.classList.remove('hidden');
+        emptyDiv.classList.add('hidden');
+
+        activeOrUnrated.forEach(data => {
+            const isSelesai = data.status === 'selesai';
+            const isDiambil = data.status === 'diambil';
+            const isMenungguResto = data.status === 'menunggu_resto';
+            const isDiterimaResto = data.status === 'diterima_resto';
+
+            let statusIcon = isSelesai ? '✅' : (isDiambil ? '🛵' : (isDiterimaResto ? '🍳' : (isMenungguResto ? '🍜' : '⏳')));
+            let statusColor = isSelesai ? 'var(--blue)' : (isDiambil ? 'var(--accent-dark)' : (isDiterimaResto ? '#D97706' : 'var(--text)'));
+            let statusText = isSelesai ? t.status3 : (isDiambil ? t.status2 : (isDiterimaResto ? (t.statusRestoTerima||'Resto Menyiapkan Pesanan') : (isMenungguResto ? (t.statusMenungguResto||'Menunggu Konfirmasi Resto') : t.status1)));
+            let descText = isSelesai ? t.desc3 : (isDiambil ? t.desc2 : (isDiterimaResto ? (t.descRestoTerima||'Pesananmu sedang disiapkan, tunggu driver mengambilnya.') : (isMenungguResto ? (t.descMenungguResto||'Menunggu resto mengonfirmasi pesananmu.') : t.desc1)));
+
+            let driverInfoHtml = isDiambil ? `
+                <div class="tracking-driver-row">
+                    <div class="driver-avatar">🛵</div>
+                    <div>
+                        <div class="driver-name-label">Driver:</div>
+                        <div class="driver-name">${data.driver_nama}</div>
+                    </div>
+                </div>
+            ` : '';
+
+            let actionsHtml = '';
+            if(data.status === 'terbuka' || data.status === 'menunggu_resto' || data.status === 'diterima_resto') {
+                actionsHtml = `<button class="btn-cancel" onclick="batalPesenanRealtime('${data.id}')">${t.btnCancel}</button>`;
+            } else if(data.status === 'diambil') {
+                const tombolWA = data.driver_wa
+                    ? `<button class="btn-wa-driver" onclick="window.open('https://wa.me/62${data.driver_wa}','_blank')">${t.btnHubungiDriver}</button>`
+                    : '';
+
+                if (data.minta_batal_customer) {
+                    // Sudah mengajukan batal, menunggu driver ACC (atau auto-approve kalau masih grace period)
+                    actionsHtml = `
+                        <div class="batal-pending-box">⏳ ${t.txtMenungguBatal}</div>
+                        ${tombolWA}
+                        <button class="btn-ajukan-batal-link" onclick="batalkanPermintaanPembatalan('${data.id}')">${t.btnBatalkanPermintaan}</button>
+                    `;
+                } else {
+                    const waktuAmbil = data.waktu_diambil || 0;
+                    const sisaMs = waktuAmbil ? (GRACE_BATAL_MS - (Date.now() - waktuAmbil)) : -1;
+
+                    if (waktuAmbil && sisaMs > 0) {
+                        const sisaDetik = Math.ceil(sisaMs / 1000);
+                        actionsHtml = `
+                            <button class="btn-cancel" onclick="ajukanPembatalan('${data.id}')">${t.btnBatalGratis} (${sisaDetik}s)</button>
+                            ${tombolWA}
+                        `;
+                    } else {
+                        actionsHtml = `
+                            ${tombolWA}
+                            <button class="btn-ajukan-batal-link" onclick="ajukanPembatalan('${data.id}')">${t.btnAjukanBatal}</button>
+                            <div class="batal-lock-note">${t.noteBatalTerkunci}</div>
+                        `;
+                    }
+                }
+            }
+
+            const perluRatingDriver = isSelesai && !data.rating;
+            const perluRatingResto = isSelesai && data.layanan === 'Pesan Makanan' && data.resto_id && !data.rating_resto;
+
+            let ratingHtml = perluRatingDriver ? `
+                <div class="rating-card" id="rating-container-${data.id}">
+                    <div class="rating-title" style="font-weight:800; color:var(--text); margin-bottom:8px;">${t.ratingTitle}</div>
+                    <div class="stars">
+                        <span class="star star-${data.id}" onclick="setRating('${data.id}', 1)">★</span>
+                        <span class="star star-${data.id}" onclick="setRating('${data.id}', 2)">★</span>
+                        <span class="star star-${data.id}" onclick="setRating('${data.id}', 3)">★</span>
+                        <span class="star star-${data.id}" onclick="setRating('${data.id}', 4)">★</span>
+                        <span class="star star-${data.id}" onclick="setRating('${data.id}', 5)">★</span>
+                    </div>
+                    <textarea id="ulasan-${data.id}" class="rating-textarea" rows="2" placeholder="${t.ph_ulasan}"></textarea>
+                    <button class="btn-rating" onclick="kirimRating('${data.id}')">${t.btnRating}</button>
+                </div>
+            ` : '';
+
+            let ratingRestoHtml = perluRatingResto ? `
+                <div class="rating-card" id="rating-resto-container-${data.id}" data-resto-wa="${data.resto_id}">
+                    <div class="rating-title" style="font-weight:800; color:var(--text); margin-bottom:8px;">🍜 ${t.ratingTitleResto || 'Kepiye rasa panganane?'}</div>
+                    <div class="stars">
+                        <span class="star star-resto-${data.id}" onclick="setRatingResto('${data.id}', 1)">★</span>
+                        <span class="star star-resto-${data.id}" onclick="setRatingResto('${data.id}', 2)">★</span>
+                        <span class="star star-resto-${data.id}" onclick="setRatingResto('${data.id}', 3)">★</span>
+                        <span class="star star-resto-${data.id}" onclick="setRatingResto('${data.id}', 4)">★</span>
+                        <span class="star star-resto-${data.id}" onclick="setRatingResto('${data.id}', 5)">★</span>
+                    </div>
+                    <textarea id="ulasan-resto-${data.id}" class="rating-textarea" rows="2" placeholder="${t.ph_ulasan}"></textarea>
+                    <button class="btn-rating" onclick="kirimRatingResto('${data.id}')">${t.btnRating}</button>
+                </div>
+            ` : '';
+
+            const card = document.createElement('div');
+            card.innerHTML = `
+                <div class="tracking-card">
+                    <div style="padding: 10px 16px; background:var(--primary-light); font-weight:800; color:var(--primary); font-size:13px; text-transform:uppercase; display:flex; justify-content:space-between;">
+                        <span>${data.layanan}</span>
+                        <span>${data.waktu_order}</span>
+                    </div>
+                    <div class="tracking-status-bar">
+                        <span class="track-icon-big">${statusIcon}</span>
+                        <div class="track-status-text" style="color:${statusColor};">${statusText}</div>
+                        <div class="track-desc-text">${descText}</div>
+                    </div>
+                    ${driverInfoHtml}
+                    ${actionsHtml ? `<div class="tracking-actions">${actionsHtml}</div>` : ''}
+                </div>
+                ${ratingHtml}
+                ${ratingRestoHtml}
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+
+    window.toggleHistory = function(id) {
+        const el = document.getElementById('hist-det-'+id);
+        const btn = document.getElementById('hist-btn-'+id);
+        if(el.classList.contains('show')) {
+            el.classList.remove('show');
+            btn.classList.remove('open');
+        } else {
+            el.classList.add('show');
+            btn.classList.add('open');
+        }
+    }
+
+    function renderHalamanRiwayat(orders) {
+        const t = langDict[currentLang];
+        const listDiv = document.getElementById('listHistory');
+        listDiv.innerHTML = "";
+        
+        let ada = false;
+        const historyOrders = orders.filter(o => (o.status === 'selesai' && o.rating && (o.layanan !== 'Pesan Makanan' || !o.resto_id || o.rating_resto)) || o.status === 'batal' || o.status === 'batal_cust' || o.status === 'ditolak_resto');
+
+        historyOrders.forEach(data => {
+            ada = true;
+            let pillClass = 'pill-pending', statusTxt = t.status1;
+            if(data.status==='selesai'){pillClass='pill-done';statusTxt=t.pillDone;}
+            if(data.status==='batal'||data.status==='batal_cust'){pillClass='pill-cancelled';statusTxt=t.status4;}
+            if(data.status==='ditolak_resto'){pillClass='pill-cancelled';statusTxt=t.statusDitolakResto||'Ditolak Resto';}
+
+            let ratingHtml = data.rating ? `<div class="hc-rating">⭐ ${data.rating} ${currentLang==='en'?'Stars (driver)':'Bintang (driver)'}${data.ulasan?` · "${data.ulasan}"`:''}</div>` : '';
+            if (data.rating_resto) ratingHtml += `<div class="hc-rating">🍜 ${data.rating_resto} ${currentLang==='en'?'Stars (food)':'Bintang (makanan)'}${data.ulasan_resto?` · "${data.ulasan_resto}"`:''}</div>`;
+
+            const card = document.createElement('div');
+            card.className = 'hist-card';
+            card.innerHTML = `
+                <div class="hc-top-row">
+                    <div class="hc-service-wrap">
+                        <div class="hc-service">${data.layanan}</div>
+                        <div class="hc-time">${data.waktu_order}</div>
+                    </div>
+                    <span class="hc-status-pill ${pillClass}">${statusTxt}</span>
+                </div>
+                <button class="hc-toggle-btn" id="hist-btn-${data.id}" onclick="toggleHistory('${data.id}')">
+                    <span>${t.btnDetail}</span>
+                    <span class="hc-toggle-icon" id="hist-icon-${data.id}">▼</span>
+                </button>
+                <div class="hc-details" id="hist-det-${data.id}">
+                    <div class="hc-route-box">
+                        <div class="hc-route-item"><span class="hc-route-icon" style="color:var(--accent);">📍</span> <div class="hc-route-text"><span>${t.t_jemput}</span><b>${data.detail_1}</b></div></div>
+                        <div class="hc-route-item"><span class="hc-route-icon" style="color:var(--primary);">🏁</span> <div class="hc-route-text"><span>${t.t_antar}</span><b>${data.detail_2}</b></div></div>
+                    </div>
+                    ${data.driver_nama ? `<div class="hc-driver">🛵 Driver: <b>${data.driver_nama}</b></div>` : ''}
+                    ${data.status==='ditolak_resto' && data.alasan_tolak_resto ? `<div class="hc-driver">🍜 Alasan resto: <b>${data.alasan_tolak_resto}</b></div>` : ''}
+                    ${data.total_bayar ? `<div class="hc-driver">🧾 Total Bayar: <b>${formatRupiah(data.total_bayar)}</b></div>` : ''}
+                    ${ratingHtml}
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+
+        if(!ada) listDiv.innerHTML = `<div class="empty-state"><span class="empty-icon">📭</span><div class="empty-title">${t.emptyOrder}</div></div>`;
+    }
+
+    window.kirimPesananFirebase = function() {
+        const isMakanan = layananAktif === 'Pesan Makanan';
+        const d1 = isMakanan ? `${_cartMakanan.resto_nama} — ${_cartMakanan.resto_alamat}` : document.getElementById('inputDetail1').value.trim();
+        const d2 = document.getElementById('inputDetail2').value.trim();
+
+        if (isMakanan && Object.keys(_cartMakanan.items).length === 0) { alert('Keranjang masih kosong, pilih menu dulu ya.'); return; }
+        if (!d1 || !d2) { alert(currentLang==='en'?"Data is incomplete!":"Data urung lengkap lur!"); return; }
+
+        const btn = document.getElementById('btnKirim');
+        btn.innerText = "⏳..."; btn.disabled = true;
+        
+        const c1 = window._mapCoords?.detail1;
+        const c2 = window._mapCoords?.detail2;
+        // Pakai jarak hasil Directions API yang sudah dihitung waktu customer pilih lokasi di peta
+        // (lihat updateEstimasiJarak) -- supaya tidak panggil Directions API lagi di sini.
+        const jarakKm = window._mapCoords?._jarakKm || null;
+        const durasiMenit = window._mapCoords?._durasiMenit || null;
+        const ongkir = jarakKm ? hitungOngkosArgo(jarakKm) : null;
+
+        const newRef = push(ref(database,'orders'));
+        const data = {
+            waktu_order: new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
+            timestamp: Date.now(), customer_nama: userAktif.nama, customer_wa: userAktif.wa,
+            layanan: layananAktif, detail_1: d1, detail_2: d2,
+            catatan: document.getElementById('inputCatatan').value,
+            // Order makanan menunggu ACC resto dulu sebelum masuk pool driver; layanan lain langsung 'terbuka'.
+            status: isMakanan ? "menunggu_resto" : "terbuka",
+            driver_nama:"",
+            // Simpan koordinat GPS untuk tampilan peta driver
+            pickup_lat: c1?.lat || null,
+            pickup_lng: c1?.lng || null,
+            dropoff_lat: c2?.lat || null,
+            dropoff_lng: c2?.lng || null,
+            // Jarak & ongkos dari Google Directions API (jarak jalan asli, sama seperti Google Maps)
+            jarak_km: jarakKm ? Number(jarakKm.toFixed(1)) : null,
+            estimasi_ongkos: ongkir,
+            durasi_menit: durasiMenit,
+        };
+
+        if (isMakanan) {
+            data.resto_id = _cartMakanan.resto_id;
+            data.resto_nama = _cartMakanan.resto_nama;
+            data.items = _cartMakanan.items;
+            data.subtotal_makanan = hitungSubtotalKeranjang();
+            data.biaya_layanan_makanan = hitungBiayaLayanan();
+            data.total_bayar = data.subtotal_makanan + data.biaya_layanan_makanan + (ongkir || 0);
+        } else {
+            // Semua order non-makanan (Antar Jemput, Kirim Barang, Titip Belanja, Bantu
+            // Bersih, Jasa Unik) kena biaya layanan flat yang sama seperti driver --
+            // ditagih customer secara cash, lalu dipotong dari saldo driver saat selesai
+            // (lihat selesaikanOrderanDriver di driver.html & catatan BIAYA_LAYANAN_JASA).
+            data.biaya_layanan_jasa = BIAYA_LAYANAN_JASA;
+            data.total_bayar = (ongkir || 0) + BIAYA_LAYANAN_JASA;
+        }
+        
+        set(newRef, data).then(() => {
+            btn.innerText = langDict[currentLang].btnOrder; btn.disabled = false;
+            document.getElementById('inputDetail1').value = "";
+            document.getElementById('inputDetail2').value = "";
+            document.getElementById('inputCatatan').value = "";
+            // Reset koordinat tersimpan
+            window._mapCoords = {};
+            const boxEst = document.getElementById('boxEstimasiJarak');
+            if (boxEst) boxEst.classList.add('hidden');
+            sembunyikanPreviewRute();
+            if (isMakanan) {
+                // Reset keranjang & tampilan form kembali ke mode normal
+                _cartMakanan = { resto_id: null, resto_nama: '', resto_alamat: '', resto_lat: null, resto_lng: null, items: {} };
+                document.getElementById('groupDetail1').classList.remove('hidden');
+                document.getElementById('boxKeranjangMakanan').classList.add('hidden');
+            }
+            document.getElementById('page-form').classList.add('hidden');
+            navigasiKe('order');
+        }).catch(e=>{alert("Error: "+e);btn.disabled=false;});
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //   MAP PICKER — Customer pilih titik jemput/tujuan di peta
+    // ═══════════════════════════════════════════════════════════
+
+    // State
+    window._mapCoords = {};         // Simpan koordinat tiap field
+    // Struktur argo: 1-4 km flat, km ke-5 dst kena tambahan per-km
+    const ARGO_KM_DASAR = 4;          // batas jarak yang kena tarif flat
+    const ARGO_TARIF_DASAR = 8000;    // Rp 8.000 untuk jarak 1-4 km
+    const ARGO_TARIF_TAMBAHAN = 2000; // Rp 2.000 / km untuk tiap km di atas 4 km
+    // Batas waktu customer boleh batal GRATIS setelah driver menerima order (harus SAMA dengan
+    // GRACE_BATAL_MS di driver.html, karena driver.html yang eksekusi auto-approve-nya).
+    const GRACE_BATAL_MS = 90 * 1000; // 90 detik
+    // Layanan yang ongkosnya dihitung per-km. "Bantu Bersih" & "Jasa Lainnya" nego/fleksibel jadi tidak dihitung.
+    const LAYANAN_PER_KM = ['Antar Jemput', 'Kirim Barang', 'Titip Belanja', 'Pesan Makanan'];
+    let _pickerMap = null;          // Instance Google Maps
+    let _pickerGeocoder = null;     // Geocoder instance
+    let _pickerInputId = null;      // inputDetail1 atau inputDetail2
+    let _pickerFieldKey = null;     // 'detail1' atau 'detail2'
+    let _geocodeTimeout = null;     // Debounce timeout
+    let _myLocationMarker = null;   // Marker titik biru "lokasi saya" (GPS asli)
+    let _myLocationCircle = null;   // Lingkaran akurasi GPS
+    let _mapsLoaded = false;        // Cek apakah Maps sudah dimuat
+
+    // Load Google Maps Script on-demand (hemat kuota — hanya dimuat kalau dipencet)
+    function muatGoogleMaps(callback) {
+        if (_mapsLoaded && window.google && window.google.maps) { callback(); return; }
+        if (document.getElementById('gmaps-script')) {
+            // Sudah dalam proses loading
+            const wait = setInterval(() => {
+                if (window.google && window.google.maps) { clearInterval(wait); _mapsLoaded = true; callback(); }
+            }, 200);
+            return;
+        }
+        const script = document.createElement('script');
+        script.id = 'gmaps-script';
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&language=id`;
+        script.async = true;
+        script.onload = () => { _mapsLoaded = true; callback(); };
+        script.onerror = () => alert('Gagal memuat Google Maps. Periksa API Key atau koneksi internet.');
+        document.head.appendChild(script);
+    }
+
+    // Buka modal map picker
+    window.bukaMapPicker = function(inputId, fieldKey) {
+        _pickerInputId = inputId;
+        _pickerFieldKey = fieldKey;
+
+        // Tampilkan modal DULU sebelum update element di dalamnya
+        document.getElementById('modal-map-picker').classList.remove('hidden');
+
+        // Setelah modal visible, update elemen-elemennya
+        const t = langDict[currentLang];
+        const judul = fieldKey === 'detail1'
+            ? `📍 ${t.t_jemput || 'Titik Jemput'}`
+            : `🏁 ${t.t_antar || 'Titik Tujuan'}`;
+
+        const titleEl = document.getElementById('map-modal-title');
+        const addrEl  = document.getElementById('map-addr-text');
+        const loadEl  = document.getElementById('map-loading-text');
+        const pinEl   = document.getElementById('map-center-pin');
+
+        if (titleEl) titleEl.textContent = judul;
+        if (addrEl)  addrEl.textContent  = 'Memuat peta...';
+        if (loadEl)  loadEl.textContent  = '';
+        if (pinEl)   pinEl.textContent   = fieldKey === 'detail1' ? '📍' : '🏁';
+
+        muatGoogleMaps(() => { inisialisasiMapPicker(); });
+    }
+
+    // Tutup modal
+    window.tutupMapPicker = function() {
+        document.getElementById('modal-map-picker').classList.add('hidden');
+    }
+
+    // Pastikan pin (📍/🏁) dan titik presisi selalu jadi elemen PALING ATAS
+    // (child terakhir) di dalam container peta. Dipanggil berkali-kali (saat
+    // modal dibuka + beberapa saat sesudahnya) karena Google Maps bisa
+    // menyisipkan ulang elemen internalnya secara async setelah peta
+    // disembunyikan/ditampilkan, yang bisa menutupi pin kita lagi.
+    function paksaPinDiAtas() {
+        const container = document.getElementById('map-picker-container');
+        if (!container) return;
+        const dotEl = container.querySelector('.map-pin-dot');
+        if (dotEl) container.appendChild(dotEl);
+        const pinElTop = document.getElementById('map-center-pin');
+        if (pinElTop) container.appendChild(pinElTop);
+    }
+
+    // Inisialisasi Google Maps instance
+    function inisialisasiMapPicker() {
+        const container = document.getElementById('map-picker-container');
+
+        // Pusat default: Gombong, Kebumen, Jawa Tengah (dipakai kalau GPS tidak tersedia)
+        const GOMBONG_CENTER = { lat: -7.6057, lng: 109.5140 };
+
+        // Cek apakah sudah ada koordinat sebelumnya untuk field ini
+        const prevCoord = window._mapCoords[_pickerFieldKey];
+
+        if (prevCoord) {
+            // Sudah pernah dipilih -- buka lagi tepat di titik itu
+            bangunMapPicker(container, { lat: prevCoord.lat, lng: prevCoord.lng }, 17);
+        } else if (_pickerFieldKey === 'detail1' && navigator.geolocation) {
+            // Titik JEMPUT belum pernah dipilih -- coba pusatkan ke posisi GPS asli customer
+            // dulu, supaya pin tengah langsung menunjukkan lokasi mereka sebenarnya (bukan
+            // default Gombong yang bisa bikin bingung "ini di mana, kok bukan posisiku").
+            document.getElementById('map-loading-text').textContent = '🎯 Mencari posisi Anda...';
+            let sudahJalan = false;
+            const jalankanFallback = () => {
+                if (sudahJalan) return;
+                sudahJalan = true;
+                document.getElementById('map-loading-text').textContent = '';
+                bangunMapPicker(container, GOMBONG_CENTER, 15);
+            };
+            const timeoutFallback = setTimeout(jalankanFallback, 3500);
+            navigator.geolocation.getCurrentPosition(pos => {
+                clearTimeout(timeoutFallback);
+                if (sudahJalan) return;
+                sudahJalan = true;
+                document.getElementById('map-loading-text').textContent = '';
+                bangunMapPicker(container, { lat: pos.coords.latitude, lng: pos.coords.longitude }, 17);
+            }, jalankanFallback, { enableHighAccuracy: true, timeout: 3500, maximumAge: 15000 });
+        } else if (_pickerFieldKey === 'detail2' && window._mapCoords.detail1) {
+            // Titik TUJUAN belum pernah dipilih, tapi titik jemput sudah -- mulai dari
+            // sekitar titik jemput (lebih relevan daripada default Gombong).
+            bangunMapPicker(container, { lat: window._mapCoords.detail1.lat, lng: window._mapCoords.detail1.lng }, 15);
+        } else {
+            bangunMapPicker(container, GOMBONG_CENTER, 15);
+        }
+    }
+
+    function bangunMapPicker(container, startCenter, startZoom) {
+        if (!_pickerMap) {
+            _pickerMap = new google.maps.Map(container, {
+                center: startCenter,
+                zoom: startZoom,
+                disableDefaultUI: true,
+                zoomControl: true,
+                gestureHandling: 'greedy',
+                styles: [
+                    { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+                    { featureType: 'transit', stylers: [{ visibility: 'simplified' }] }
+                ]
+            });
+            _pickerGeocoder = new google.maps.Geocoder();
+
+            // Debounced geocode saat peta digeser (idle = selesai digeser)
+            _pickerMap.addListener('idle', () => {
+                clearTimeout(_geocodeTimeout);
+                const center = _pickerMap.getCenter();
+                document.getElementById('map-addr-text').textContent = '🔍 Mencari alamat...';
+                _geocodeTimeout = setTimeout(() => reverseGeocode(center.lat(), center.lng()), 600);
+            });
+        } else {
+            // Pindah ke koordinat yang sesuai
+            _pickerMap.setCenter(startCenter);
+            _pickerMap.setZoom(startZoom);
+            // Peta sempat disembunyikan (display:none) saat modal ditutup --
+            // paksa Google Maps menghitung ulang ukuran & redraw layer internalnya.
+            google.maps.event.trigger(_pickerMap, 'resize');
+            _pickerMap.setCenter(startCenter);
+        }
+
+        // Jaga-jaga: paksa pin & dot SELALU jadi child paling akhir di container,
+        // setiap kali modal dibuka (bukan cuma sekali saat map pertama dibuat).
+        // Google Maps suka menyisipkan ulang elemen internalnya saat peta
+        // disembunyikan lalu ditampilkan lagi, sehingga urutan DOM bisa berubah
+        // dan pin kita ketutup lagi.
+        paksaPinDiAtas();
+        setTimeout(paksaPinDiAtas, 150);
+        setTimeout(paksaPinDiAtas, 500);
+
+        // Trigger reverse geocode untuk posisi awal
+        const center = _pickerMap.getCenter();
+        reverseGeocode(center.lat(), center.lng());
+
+        // Setup autocomplete pada search input
+        setupAutocomplete();
+
+        // Tampilkan titik biru lokasi GPS asli (otomatis, tidak perlu klik GPS)
+        tampilkanLokasiSayaDiPeta();
+    }
+
+    // Tampilkan marker titik biru "lokasi saya saat ini" (GPS asli) di peta.
+    // Marker ini NEMPEL di koordinat asli sehingga ikut diam saat peta digeser
+    // -- berbeda dari pin tengah (📍) yang fixed di tengah layar untuk memilih titik.
+    function tampilkanLokasiSayaDiPeta() {
+        if (!navigator.geolocation || !_pickerMap) return;
+        navigator.geolocation.getCurrentPosition(pos => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const akurasi = pos.coords.accuracy || 30; // meter
+            const posisi = { lat, lng };
+
+            // Ikon titik biru ala Google Maps (lingkaran biru + border putih)
+            const iconTitikBiru = {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 8,
+                fillColor: '#4285F4',
+                fillOpacity: 1,
+                strokeColor: '#FFFFFF',
+                strokeWeight: 2.5,
+            };
+
+            if (_myLocationMarker) {
+                _myLocationMarker.setPosition(posisi);
+            } else {
+                _myLocationMarker = new google.maps.Marker({
+                    position: posisi,
+                    map: _pickerMap,
+                    icon: iconTitikBiru,
+                    zIndex: 5,
+                    clickable: false,
+                    title: 'Lokasi Anda saat ini',
+                });
+            }
+
+            // Lingkaran radius akurasi GPS (mirip halo biru transparan di Google Maps)
+            if (_myLocationCircle) {
+                _myLocationCircle.setCenter(posisi);
+                _myLocationCircle.setRadius(akurasi);
+            } else {
+                _myLocationCircle = new google.maps.Circle({
+                    center: posisi,
+                    radius: akurasi,
+                    map: _pickerMap,
+                    strokeColor: '#4285F4',
+                    strokeOpacity: 0.5,
+                    strokeWeight: 1,
+                    fillColor: '#4285F4',
+                    fillOpacity: 0.15,
+                    clickable: false,
+                    zIndex: 4,
+                });
+            }
+        }, () => {
+            // Diam-diam gagal (tidak perlu alert) -- pengguna tetap bisa pilih lokasi manual.
+            // Tombol "🎯 GPS" tetap tersedia untuk coba ulang / kalau mau pindah ke lokasi GPS.
+        }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 15000 });
+    }
+
+    // Reverse geocode: koordinat → nama alamat
+    function reverseGeocode(lat, lng) {
+        if (!_pickerGeocoder) return;
+        _pickerGeocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            const addrEl = document.getElementById('map-addr-text');
+            if (status === 'OK' && results[0]) {
+                addrEl.textContent = results[0].formatted_address;
+            } else {
+                addrEl.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            }
+        });
+    }
+
+    // Setup Places Autocomplete pada search input
+    function setupAutocomplete() {
+        const input = document.getElementById('map-search-input');
+        if (!input || input.dataset.acReady) return;
+        input.dataset.acReady = '1';
+
+        const ac = new google.maps.places.Autocomplete(input, {
+            componentRestrictions: { country: 'id' },
+            fields: ['geometry', 'formatted_address', 'name'],
+        });
+        ac.addListener('place_changed', () => {
+            const place = ac.getPlace();
+            if (place.geometry && place.geometry.location) {
+                _pickerMap.setCenter(place.geometry.location);
+                _pickerMap.setZoom(17);
+                const addrEl = document.getElementById('map-addr-text');
+                addrEl.textContent = place.formatted_address || place.name || '';
+                // Sama seperti tombol GPS/Cari -- paksa pin tetap di atas setelah peta pindah.
+                paksaPinDiAtas();
+                setTimeout(paksaPinDiAtas, 150);
+                setTimeout(paksaPinDiAtas, 500);
+            }
+        });
+    }
+
+    // Cari lokasi dengan tombol 🔍
+    window.cariLokasiDiPeta = function() {
+        const q = document.getElementById('map-search-input').value.trim();
+        if (!q || !_pickerGeocoder) return;
+        document.getElementById('map-loading-text').textContent = 'Mencari...';
+        _pickerGeocoder.geocode({ address: q + ', Kebumen, Jawa Tengah, Indonesia' }, (results, status) => {
+            document.getElementById('map-loading-text').textContent = '';
+            if (status === 'OK' && results[0]) {
+                _pickerMap.setCenter(results[0].geometry.location);
+                _pickerMap.setZoom(17);
+                // Sama seperti tombol GPS -- paksa pin tetap di atas setelah peta pindah.
+                paksaPinDiAtas();
+                setTimeout(paksaPinDiAtas, 150);
+                setTimeout(paksaPinDiAtas, 500);
+            } else {
+                alert('Lokasi tidak ditemukan. Coba nama yang lebih spesifik.');
+            }
+        });
+    }
+
+    // Pakai GPS saat ini di dalam modal peta
+    window.pakaiGPSSaatIni = function() {
+        if (!navigator.geolocation) { alert('GPS tidak didukung browser ini.'); return; }
+        document.getElementById('map-loading-text').textContent = '🎯 Mencari posisi GPS...';
+        navigator.geolocation.getCurrentPosition(pos => {
+            document.getElementById('map-loading-text').textContent = '';
+            const latlng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+            _pickerMap.setCenter(latlng);
+            _pickerMap.setZoom(18);
+            tampilkanLokasiSayaDiPeta(); // refresh titik biru juga
+        }, () => {
+            document.getElementById('map-loading-text').textContent = '';
+            alert('Gagal ambil GPS. Pastikan izin lokasi aktif.');
+        }, { enableHighAccuracy: true, timeout: 10000 });
+    }
+
+    // Konfirmasi: simpan lokasi ke field dan tutup modal
+    window.konfirmasiLokasiPeta = function() {
+        if (!_pickerMap) return;
+        const center = _pickerMap.getCenter();
+        const lat = center.lat();
+        const lng = center.lng();
+        const addr = document.getElementById('map-addr-text').textContent;
+
+        // Simpan koordinat
+        window._mapCoords[_pickerFieldKey] = { lat, lng };
+
+        // Update textarea dengan alamat yang terbaca
+        const inputEl = document.getElementById(_pickerInputId);
+        if (inputEl) inputEl.value = addr;
+
+        updateEstimasiJarak();
+        tutupMapPicker();
+    }
+
+    // Hitung jarak via Google Directions API (jarak jalan asli, bukan garis lurus).
+    // Hasilnya sama persis dengan yang ditampilkan Google Maps navigasi.
+    // Callback dipanggil dengan (jarakKm, durasiMenit, directionsResult) setelah API merespons.
+    // directionsResult diteruskan supaya bisa dipakai gambar rute di peta preview tanpa panggil API lagi.
+    function hitungJarakDirAPI(lat1, lng1, lat2, lng2, callback) {
+        const service = new google.maps.DirectionsService();
+        service.route({
+            origin: new google.maps.LatLng(lat1, lng1),
+            destination: new google.maps.LatLng(lat2, lng2),
+            travelMode: google.maps.TravelMode.DRIVING,
+        }, (result, status) => {
+            if (status === 'OK' && result.routes[0]) {
+                const leg = result.routes[0].legs[0];
+                const jarakKm = leg.distance.value / 1000;   // meter -> km
+                const durasiMenit = Math.ceil(leg.duration.value / 60); // detik -> menit
+                callback(jarakKm, durasiMenit, result);
+            } else {
+                // Fallback ke Haversine (garis lurus) kalau Directions API gagal, misal offline
+                const R = 6371;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+                const jarakKm = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                callback(jarakKm, null, null);
+            }
+        });
+    }
+
+    function formatRupiah(angka) {
+        return 'Rp ' + Math.round(angka).toLocaleString('id-ID');
+    }
+
+    // Hitung ongkos pakai struktur argo: 1-4 km flat Rp 8.000, km ke-5 dst +Rp 2.000/km.
+    // Jarak dibulatkan KE ATAS ke km penuh terdekat (gaya argo/meter taksi),
+    // minimal 1 km supaya order jarak sangat pendek tetap kena tarif dasar.
+    function hitungOngkosArgo(jarakKmAsli) {
+        const jarakBulat = Math.max(1, Math.ceil(jarakKmAsli));
+        if (jarakBulat <= ARGO_KM_DASAR) return ARGO_TARIF_DASAR;
+        return ARGO_TARIF_DASAR + (jarakBulat - ARGO_KM_DASAR) * ARGO_TARIF_TAMBAHAN;
+    }
+
+    // Tampilkan jarak & estimasi ongkos via Google Directions API (jarak jalan asli).
+    // Hanya tampil kalau: layanan saat ini pakai tarif per-km, DAN kedua titik
+    // (jemput & tujuan) sudah dipilih lewat peta.
+    function updateEstimasiJarak() {
+        const box = document.getElementById('boxEstimasiJarak');
+        if (!box) return;
+
+        const c1 = window._mapCoords?.detail1;
+        const c2 = window._mapCoords?.detail2;
+        const layananPerKm = LAYANAN_PER_KM.includes(layananAktif);
+
+        if (!layananPerKm || !c1 || !c2) {
+            box.classList.add('hidden');
+            sembunyikanPreviewRute();
+            return;
+        }
+
+        // Tampilkan kotak dulu dengan status "Menghitung..." sambil nunggu API
+        box.classList.remove('hidden');
+        document.getElementById('txtEstimasiJarak').textContent = '⏳ Menghitung...';
+        document.getElementById('txtEstimasiHarga').textContent = '⏳';
+
+        hitungJarakDirAPI(c1.lat, c1.lng, c2.lat, c2.lng, (jarakKm, durasiMenit, dirResult) => {
+            const ongkos = hitungOngkosArgo(jarakKm);
+            const durasiTeks = durasiMenit ? ` (~${durasiMenit} menit)` : '';
+            document.getElementById('txtEstimasiJarak').textContent = jarakKm.toFixed(1) + ' km' + durasiTeks;
+
+            // Untuk layanan non-makanan, biaya layanan sudah langsung dijumlah ke angka
+            // "Ongkos Ngeter" -- customer cukup lihat satu harga final, tidak perlu tahu
+            // ada komponen biaya layanan terpisah (biar tidak terasa "ditagih macam-macam").
+            // Untuk Pesan Makanan, tetap pakai baris "Total Keseluruhan" seperti biasa
+            // karena di situ memang perlu breakdown (harga makanan beda dari ongkir).
+            const rowGrandTotal = document.getElementById('rowGrandTotalMakanan');
+            if (layananAktif === 'Pesan Makanan') {
+                document.getElementById('txtEstimasiHarga').textContent = formatRupiah(ongkos);
+                rowGrandTotal.classList.remove('hidden');
+                document.getElementById('txtGrandTotalMakanan').textContent = formatRupiah(hitungTotalMakanan() + ongkos);
+            } else {
+                document.getElementById('txtEstimasiHarga').textContent = formatRupiah(ongkos + BIAYA_LAYANAN_JASA);
+                rowGrandTotal.classList.add('hidden');
+            }
+
+            // Simpan hasil Directions API supaya dipakai lagi saat order dikirim (tidak panggil API 2x)
+            window._mapCoords._jarakKm = jarakKm;
+            window._mapCoords._durasiMenit = durasiMenit;
+
+            // Tampilkan peta kecil dengan pin jemput (hijau) & tujuan (merah) + garis rutenya,
+            // supaya customer bisa cek visual kedua titik sudah benar sebelum order.
+            tampilkanPreviewRute(c1, c2, dirResult);
+        });
+    }
+
+    // ── PETA PREVIEW RUTE (jemput + tujuan) di form order ──
+    let _previewMap = null;
+    let _previewPickupMarker = null;
+    let _previewDropoffMarker = null;
+    let _previewRenderer = null;
+    let _previewLine = null; // fallback garis putus-putus kalau Directions gagal
+
+    function sembunyikanPreviewRute() {
+        const el = document.getElementById('previewRouteMap');
+        if (el) el.classList.add('hidden');
+    }
+
+    function tampilkanPreviewRute(c1, c2, dirResult) {
+        const container = document.getElementById('previewRouteMap');
+        if (!container) return;
+        container.classList.remove('hidden');
+
+        if (!_previewMap) {
+            _previewMap = new google.maps.Map(container, {
+                center: c1, zoom: 14,
+                disableDefaultUI: true, zoomControl: false,
+                gestureHandling: 'none', // preview saja, bukan peta interaktif
+                clickableIcons: false,
+            });
+            _previewRenderer = new google.maps.DirectionsRenderer({
+                suppressMarkers: true, // pin jemput/tujuan pakai marker kita sendiri (hijau/merah)
+                preserveViewport: true,
+                polylineOptions: { strokeColor: '#16A34A', strokeWeight: 4 }
+            });
+            _previewRenderer.setMap(_previewMap);
+        } else {
+            // Container sempat hidden (display:none) -- paksa Google Maps hitung ulang ukuran.
+            google.maps.event.trigger(_previewMap, 'resize');
+        }
+
+        // Bersihkan marker/garis lama
+        if (_previewPickupMarker) _previewPickupMarker.setMap(null);
+        if (_previewDropoffMarker) _previewDropoffMarker.setMap(null);
+        if (_previewLine) _previewLine.setMap(null);
+        _previewRenderer.setDirections({ routes: [] });
+
+        // Marker titik jemput (hijau)
+        _previewPickupMarker = new google.maps.Marker({
+            position: c1, map: _previewMap, title: 'Titik Jemput',
+            label: { text: 'J', color: 'white', fontWeight: 'bold', fontSize: '11px' },
+            icon: { path: google.maps.SymbolPath.CIRCLE, scale: 11, fillColor: '#16A34A', fillOpacity: 1, strokeColor: 'white', strokeWeight: 2 },
+            zIndex: 10,
+        });
+
+        // Marker titik tujuan (merah)
+        _previewDropoffMarker = new google.maps.Marker({
+            position: c2, map: _previewMap, title: 'Titik Tujuan',
+            label: { text: 'T', color: 'white', fontWeight: 'bold', fontSize: '11px' },
+            icon: { path: google.maps.SymbolPath.CIRCLE, scale: 11, fillColor: '#EF4444', fillOpacity: 1, strokeColor: 'white', strokeWeight: 2 },
+            zIndex: 10,
+        });
+
+        if (dirResult) {
+            // Gambar rute jalan asli hasil Directions API (dari perhitungan jarak, tidak panggil API lagi)
+            _previewRenderer.setDirections(dirResult);
+        } else {
+            // Directions gagal -- tetap tampilkan garis lurus putus-putus penghubung
+            _previewLine = new google.maps.Polyline({
+                path: [c1, c2],
+                strokeColor: '#94A3B8', strokeOpacity: 0.8, strokeWeight: 3,
+                icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 }, offset: '0', repeat: '12px' }],
+                map: _previewMap,
+            });
+        }
+
+        // Sesuaikan zoom & posisi supaya kedua pin kelihatan
+        const bounds = new google.maps.LatLngBounds();
+        bounds.extend(c1);
+        bounds.extend(c2);
+        _previewMap.fitBounds(bounds, { top: 30, right: 24, bottom: 24, left: 24 });
+    }
+
+    // Cek Enter pada search input
+    document.getElementById('map-search-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); cariLokasiDiPeta(); }
+    });
+
+
+
+    // Batal LANGSUNG hanya sah selagi belum ada driver yang menangani (order masih 'terbuka',
+    // atau untuk order makanan masih 'menunggu_resto'/'diterima_resto'). Pakai transaction supaya
+    // aman dari race condition -- kalau ternyata pas diklik driver baru saja menerima orderan ini
+    // (status sudah 'diambil'), pembatalan dibatalkan otomatis & customer diarahkan ke alur
+    // "ajukan pembatalan" saja, supaya driver tidak dirugikan kena potong saldo tanpa sepengetahuannya.
+    window.batalPesenanRealtime = function(orderId) {
+        if(!confirm(currentLang==='en'?'Are you sure you want to cancel?':(currentLang==='ngapak'?'Tenane arep dibatalna?':'Naha leres badé ngabolaykeun pesenan ieu?'))) return;
+        const statusBolehBatalLangsung = ['terbuka', 'menunggu_resto', 'diterima_resto'];
+        runTransaction(ref(database,'orders/'+orderId), pesanan => {
+            if (pesanan && statusBolehBatalLangsung.includes(pesanan.status)) { pesanan.status = 'batal_cust'; return pesanan; }
+            return; // batal transaksi -- biarkan data apa adanya (order sudah diambil driver)
+        }).then(hasil => {
+            if (!hasil.committed) {
+                alert(currentLang==='en' ? 'A driver just accepted this order. Please use "Request Cancellation" instead.' :
+                      (currentLang==='ngapak' ? 'Lagi bae ana driver sing nampa orderan iki. Nggo tombol "Njaluk Pembatalan" wae.' :
+                       'Baru saja ada driver yang menerima order ini. Silakan pakai tombol "Ajukan Pembatalan".'));
+            }
+        }).catch(e => alert('Error: ' + e));
+    }
+
+    // Customer mengajukan pembatalan setelah driver menerima order. Order TIDAK langsung
+    // batal di sini -- cuma pasang flag. driver.html yang memutuskan: auto-approve kalau
+    // masih dalam masa grace period (GRACE_BATAL_MS), atau tampilkan ke driver buat di-ACC/tolak.
+    window.ajukanPembatalan = function(orderId) {
+        const t = langDict[currentLang];
+        const pesanKonfirmasi = currentLang==='en' ? 'Send cancellation request to driver?' :
+            (currentLang==='ngapak' ? 'Kirim panjaluk pembatalan menyang driver?' : 'Kirim permintaan pembatalan ke driver?');
+        if (!confirm(pesanKonfirmasi)) return;
+        update(ref(database,'orders/'+orderId), { minta_batal_customer: true, minta_batal_waktu: Date.now() })
+            .catch(e => alert('Error: ' + e));
+    }
+
+    // Customer batalkan/tarik lagi permintaan pembatalan yang sudah dikirim (berubah pikiran,
+    // misal ternyata mau lanjut order).
+    window.batalkanPermintaanPembatalan = function(orderId) {
+        update(ref(database,'orders/'+orderId), { minta_batal_customer: false }).catch(e => alert('Error: ' + e));
+    }
+
+    window.setRatingResto = function(orderId, skor) {
+        document.querySelectorAll(`.star-resto-${orderId}`).forEach((s,i)=>s.classList.toggle('selected',i<skor));
+        const container = document.getElementById(`rating-resto-container-${orderId}`);
+        if(container) container.dataset.skor = skor;
+    }
+
+    window.kirimRatingResto = function(orderId) {
+        const container = document.getElementById(`rating-resto-container-${orderId}`);
+        const skor = parseInt(container.dataset.skor || "0");
+        if(skor === 0) {
+            alert(currentLang==='en'?'Please select stars first!':'Pilih bintang disit!');
+            return;
+        }
+        const waResto = container.dataset.restoWa;
+        const ulasan = document.getElementById(`ulasan-resto-${orderId}`).value.trim();
+
+        // Transaction supaya rating_total & rating_count resto ke-update dengan aman
+        // walau banyak customer ngirim rating bersamaan (hindari race condition).
+        runTransaction(ref(database, 'restoran/' + waResto), (resto) => {
+            if (resto) {
+                resto.rating_total = (resto.rating_total || 0) + skor;
+                resto.rating_count = (resto.rating_count || 0) + 1;
+            }
+            return resto;
+        }).then(() => {
+            return update(ref(database, 'orders/' + orderId), { rating_resto: skor, ulasan_resto: ulasan });
+        }).then(() => {
+            alert(langDict[currentLang].alertRating);
+        }).catch(e => alert('Error: ' + e));
+    }
+
+
+    window.setRating = function(orderId, skor) {
+        document.querySelectorAll(`.star-${orderId}`).forEach((s,i)=>s.classList.toggle('selected',i<skor));
+        const container = document.getElementById(`rating-container-${orderId}`);
+        if(container) container.dataset.skor = skor;
+    }
+
+    window.kirimRating = function(orderId) {
+        const container = document.getElementById(`rating-container-${orderId}`);
+        const skor = parseInt(container.dataset.skor || "0");
+        if(skor === 0) {
+            alert(currentLang==='en'?'Please select stars first!':'Pilih bintang disit!');
+            return;
+        }
+        const ulasan = document.getElementById(`ulasan-${orderId}`).value.trim();
+        update(ref(database,'orders/'+orderId), {rating:skor, ulasan:ulasan}).then(()=>{
+            alert(langDict[currentLang].alertRating);
+        });
+    }
+
+    setLang('ngapak');
+</script>
+</body>
+</html>

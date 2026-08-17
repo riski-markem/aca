@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - TulangTulung Gombong</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', Tahoma, Geneva, sans-serif; background-color: #ecf0f1; margin: 0; padding: 0; }
+        
+        /* LOGIN ADMIN */
+        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #2c3e50; }
+        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.3); width: 300px; }
+        .login-box h2 { margin-top: 0; color: #27ae60; font-weight: 800; }
+        .login-box input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; font-weight: bold; font-family: inherit;}
+        .login-box button { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; font-family: inherit;}
+        
+        /* DASHBOARD ADMIN */
+        .header { background-color: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header h2 { margin: 0; font-weight: 800;}
+        .header span { color: #f1c40f; }
+        
+        .tab-menu { display: flex; background: #1a252f; padding: 10px 20px; gap: 10px; flex-wrap: wrap; }
+        .tab-btn { background: none; border: none; color: white; padding: 10px 20px; font-size: 15px; font-weight: bold; cursor: pointer; border-radius: 8px; opacity: 0.6; transition: 0.3s; flex: 1; min-width: 150px; font-family: inherit;}
+        .tab-btn.active { background: #f1c40f; color: #2c3e50; opacity: 1; }
+
+        .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        
+        /* KOTAK STATISTIK RINGKAS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-box { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-bottom: 5px solid #ddd; }
+        .stat-box.green { border-color: #27ae60; }
+        .stat-box.blue { border-color: #3498db; }
+        .stat-box.gold { border-color: #f39c12; background: linear-gradient(135deg, #fffcf0, #fff); }
+        .stat-box.purple { border-color: #8e44ad; background: linear-gradient(135deg, #f9f0ff, #fff); }
+        
+        .stat-angka { font-size: 30px; font-weight: 800; color: #2c3e50; margin-top: 5px; }
+        .stat-label { font-size: 11px; color: #7f8c8d; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+
+        /* SEARCH BAR & EXPORT BUTTON */
+        .search-bar { width: 100%; padding: 15px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 15px; box-sizing: border-box; margin-bottom: 20px; font-weight: bold; font-family: inherit;}
+        .search-bar:focus { border-color: #3498db; outline: none; }
+        .btn-excel { background-color: #1d6f42; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; font-family: inherit;}
+        .btn-excel:hover { background-color: #155530; }
+
+        /* GRID KARTU */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #ddd; position: relative; }
+        .card.pending { border-color: #f39c12; }
+        .card.aktif { border-color: #27ae60; }
+        .card.suspend { border-color: #e74c3c; }
+        .card.ditolak { border-color: #7f8c8d; }
+        
+        .card-title { font-size: 16px; font-weight: 800; color: #2c3e50; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;}
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; color: white; letter-spacing: 0.5px;}
+        .bg-pending { background: #f39c12; } .bg-aktif { background: #27ae60; } .bg-suspend { background: #e74c3c; }
+        
+        .card-detail { font-size: 13px; color: #555; margin-bottom: 5px; font-weight: 600;}
+        .saldo-text { font-size: 18px; font-weight: 800; color: #2980b9; margin: 10px 0; }
+
+        /* FORM TOP-UP */
+        .topup-box { background: #e8f5e9; padding: 12px; border-radius: 8px; margin-top: 15px; border: 1.5px dashed #27ae60; }
+        .topup-box input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-weight: bold;}
+        .btn-topup { width: 100%; background: #27ae60; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: inherit;}
+
+        /* TOMBOL AKSI */
+        .action-btns { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-setuju { flex: 1; background: #3498db; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: inherit;}
+        .btn-suspend { flex: 1; background: #e74c3c; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: inherit;}
+        .btn-hapus { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; font-family: inherit;}
+
+        /* TAB KEUANGAN */
+        .keuangan-form-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .keuangan-form-box h3 { margin: 0 0 15px 0; color: #2c3e50; font-weight: 800; }
+        .jenis-pilih-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .jenis-btn { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #ddd; background: #f8f9fa; font-weight: 800; cursor: pointer; font-family: inherit; transition: 0.2s; color: #7f8c8d; font-size: 14px; }
+        .jenis-btn.selected.tipe-masuk { background: #27ae60; color: white; border-color: #27ae60; }
+        .jenis-btn.selected.tipe-keluar { background: #e74c3c; color: white; border-color: #e74c3c; }
+        .keuangan-form-box input { width: 100%; padding: 12px 15px; margin-bottom: 12px; border: 2px solid #bdc3c7; border-radius: 8px; box-sizing: border-box; font-size: 14px; font-weight: 600; font-family: inherit; }
+        .keuangan-form-box input:focus { border-color: #3498db; outline: none; }
+        .btn-simpan-keuangan { width: 100%; background: #2980b9; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 15px; cursor: pointer; font-family: inherit; }
+        .btn-simpan-keuangan:hover { background: #21618c; }
+        .nominal-besar { font-size: 22px; font-weight: 800; margin: 8px 0; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-box">
+        <h2>Admin TulangTulung</h2>
+        <p style="color:#7f8c8d; font-size:13px; font-weight:600;">Masuk pakai akun admin</p>
+        <input type="text" id="adminUsername" placeholder="Username Admin" autocomplete="username" autocapitalize="off">
+        <input type="password" id="adminPassword" placeholder="Kata sandi" autocomplete="current-password">
+        <button onclick="loginAdmin()" id="btnLoginAdmin">MASUK SISTEM</button>
+        <p id="loginAdminError" style="color:#e74c3c; font-size:12.5px; font-weight:700; display:none; margin-bottom:0;"></p>
+    </div>
+</div>
+
+<div id="dashboard-admin" class="hidden">
+    <div class="header">
+        <h2>🛠️ Panel <span>CEO</span></h2>
+        <button onclick="keluarAdmin()" style="background:#e74c3c; color:white; border:none; padding:8px 16px; border-radius:8px; font-weight:bold; cursor:pointer; font-family:inherit;">Keluar</button>
+    </div>
+
+    <div class="tab-menu">
+        <button class="tab-btn active" id="btn-tab-driver" onclick="bukaTab('driver')">👥 Data Mitra Driver</button>
+        <button class="tab-btn" id="btn-tab-resto" onclick="bukaTab('resto')">🍜 Data Mitra Resto</button>
+        <button class="tab-btn" id="btn-tab-order" onclick="bukaTab('order')">📦 Pantau Orderan</button>
+        <button class="tab-btn" id="btn-tab-keuangan" onclick="bukaTab('keuangan')">💰 Keuangan</button>
+    </div>
+
+    <div class="container">
+        
+        <div class="stats-grid">
+            <div class="stat-box green">
+                <div class="stat-label">Total Orderan Beres</div>
+                <div class="stat-angka" id="adminStatOrder">0</div>
+            </div>
+            <div class="stat-box blue">
+                <div class="stat-label">Total Mitra Aktif</div>
+                <div class="stat-angka" id="adminStatDriver">0</div>
+            </div>
+            <div class="stat-box" style="border-color:#D97706;">
+                <div class="stat-label">Total Resto Aktif</div>
+                <div class="stat-angka" id="adminStatResto" style="color:#D97706;">0</div>
+            </div>
+            <div class="stat-box gold">
+                <div class="stat-label">Total Saldo Ngendap (Milik Driver)</div>
+                <div class="stat-angka" id="adminStatSaldo">Rp 0</div>
+            </div>
+            <div class="stat-box purple">
+                <div class="stat-label">Total Pemasukan Admin (Biaya Platform + Layanan)</div>
+                <div class="stat-angka" id="adminStatPendapatan" style="color: #8e44ad;">Rp 0</div>
+            </div>
+        </div>
+
+        <div id="tab-driver">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #2c3e50; font-weight: 800;">Daftar Mitra Driver</h3>
+            </div>
+            <input type="text" id="searchDriver" class="search-bar" placeholder="🔍 Cari Nama utawa Nomer WA Driver..." onkeyup="renderDrivers()">
+            
+            <div class="grid-container" id="listDrivers">
+                </div>
+        </div>
+
+        <div id="tab-resto" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #2c3e50; font-weight: 800;">Daftar Mitra Resto</h3>
+            </div>
+            <input type="text" id="searchResto" class="search-bar" placeholder="🔍 Cari Nama utawa Nomer WA Resto..." onkeyup="renderRestoran()">
+            
+            <div class="grid-container" id="listResto">
+                </div>
+        </div>
+
+        <div id="tab-order" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #2c3e50; font-weight: 800;">Riwayat Pesenan (Real-time)</h3>
+                <button class="btn-excel" onclick="exportToCSV()">📥 Download Laporan (.csv)</button>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+                <input type="text" id="searchOrder" class="search-bar" style="flex:2; min-width:220px; margin-bottom:0;" placeholder="🔍 Cari nama customer, driver, resto, atau layanan..." onkeyup="renderOrdersUI()">
+                <select id="filterStatusOrder" class="search-bar" style="flex:1; min-width:160px; margin-bottom:0;" onchange="renderOrdersUI()">
+                    <option value="">Semua Status</option>
+                    <option value="terbuka">Terbuka</option>
+                    <option value="menunggu_resto">Menunggu Resto</option>
+                    <option value="diterima_resto">Diterima Resto</option>
+                    <option value="ditolak_resto">Ditolak Resto</option>
+                    <option value="diambil">Diambil Driver</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="batal">Batal</option>
+                    <option value="batal_cust">Batal Customer</option>
+                </select>
+            </div>
+            <div class="grid-container" id="listOrders">
+                </div>
+        </div>
+
+        <div id="tab-keuangan" class="hidden">
+            <div class="stats-grid">
+                <div class="stat-box green">
+                    <div class="stat-label">Total Pemasukan</div>
+                    <div class="stat-angka" id="keuStatPemasukan" style="color:#27ae60;">Rp 0</div>
+                </div>
+                <div class="stat-box" style="border-color:#e74c3c;">
+                    <div class="stat-label">Total Pengeluaran</div>
+                    <div class="stat-angka" id="keuStatPengeluaran" style="color:#e74c3c;">Rp 0</div>
+                </div>
+                <div class="stat-box blue">
+                    <div class="stat-label">Saldo Bersih</div>
+                    <div class="stat-angka" id="keuStatSaldo">Rp 0</div>
+                </div>
+            </div>
+
+            <div class="keuangan-form-box">
+                <h3>➕ Catat Transaksi Baru</h3>
+                <div class="jenis-pilih-row">
+                    <button type="button" id="btnJenisPemasukan" class="jenis-btn tipe-masuk selected" onclick="pilihJenisKeuangan('pemasukan')">⬆️ Pemasukan</button>
+                    <button type="button" id="btnJenisPengeluaran" class="jenis-btn tipe-keluar" onclick="pilihJenisKeuangan('pengeluaran')">⬇️ Pengeluaran</button>
+                </div>
+                <input type="text" id="keuKeterangan" placeholder="Keterangan (misal: Sewa Google Maps API)">
+                <input type="number" id="keuNominal" placeholder="Nominal (Rp), misal: 50000">
+                <button class="btn-simpan-keuangan" onclick="simpanTransaksiKeuangan()">💾 Simpan Transaksi</button>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #2c3e50; font-weight: 800;">Riwayat Transaksi</h3>
+                <button class="btn-excel" onclick="exportKeuanganCSV()">📥 Download Laporan (.csv)</button>
+            </div>
+            <div class="grid-container" id="listKeuangan">
+                </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, onValue, update, remove, push, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    // ── FIREBASE ASLI TULANGTULUNG GOMBONG ──
+    const firebaseConfig = {
+        apiKey: "AIzaSyC04vDd6Z1NnrMx5gK7nMCyDceaGZj_bQw",
+        authDomain: "mastulungmasgombong.firebaseapp.com",
+        databaseURL: "https://mastulungmasgombong-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "mastulungmasgombong",
+        storageBucket: "mastulungmasgombong.firebasestorage.app",
+        messagingSenderId: "4547691331",
+        appId: "1:4547691331:web:45ecd39aab90f45b4f25f6",
+        measurementId: "G-MCYH7YMQXQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Biaya platform flat per order (HARUS selalu sama dengan BIAYA_PLATFORM di driver.html,
+    // karena ini nilai yang benar-benar dipotong dari saldo driver -- kalau salah satu diubah,
+    // ubah juga yang satunya).
+    const BIAYA_PLATFORM = 1000;
+
+    // VARIABEL GLOBAL UNTUK PENCARIAN & EXPORT
+    let allDriversData = [];
+    let allRestoranData = [];
+    let allOrdersData = [];
+    let allKeuanganData = [];
+    let jenisKeuanganAktif = 'pemasukan';
+    let listenerAdminSudahNyala = false; // biar onValue tidak didaftarkan berkali-kali tiap login ulang
+
+    // ── LOGIN ADMIN (Firebase Auth asli, BUKAN PIN statis) ──
+    // Akun admin dibuat manual lewat Firebase Console > Authentication > Add User.
+    // Lalu UID akun tsb WAJIB ditambahkan ke node "admins/{uid}: true" di Realtime Database
+    // (lihat SETUP-ADMIN-LOGIN.md) -- tanpa ini, siapa pun yang berhasil bikin akun Firebase
+    // Auth (misal mitra resto) TETAP tidak akan bisa masuk ke panel admin ini.
+    //
+    // Firebase Auth mewajibkan format email, jadi biar admin tidak perlu ingat/ketik email
+    // asli, username yang diketik "disamarkan" jadi email di belakang layar -- sama persis
+    // triknya dengan emailSemuDariWA() di resto.html. Ini murni format teknis untuk Firebase,
+    // bukan email sungguhan dan tidak pernah dipakai kirim email.
+    const DOMAIN_EMAIL_ADMIN = '@admin.mastulung.app';
+    function emailSemuDariUsername(username) {
+        return username.toLowerCase().replace(/[^a-z0-9._-]/g, '') + DOMAIN_EMAIL_ADMIN;
+    }
+
+    function tampilkanErrorLogin(pesan) {
+        const el = document.getElementById('loginAdminError');
+        el.textContent = pesan;
+        el.style.display = 'block';
+    }
+
+    window.loginAdmin = async function() {
+        const username = document.getElementById('adminUsername').value.trim();
+        const password = document.getElementById('adminPassword').value;
+        const btn = document.getElementById('btnLoginAdmin');
+        document.getElementById('loginAdminError').style.display = 'none';
+
+        if (!username || !password) { tampilkanErrorLogin('Isi username & kata sandi dulu.'); return; }
+
+        btn.disabled = true; btn.innerText = 'Memeriksa... ⏳';
+        try {
+            await signInWithEmailAndPassword(auth, emailSemuDariUsername(username), password);
+            // Verifikasi & tampilan dashboard ditangani otomatis oleh onAuthStateChanged di bawah.
+        } catch (e) {
+            btn.disabled = false; btn.innerText = 'MASUK SISTEM';
+            if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') {
+                tampilkanErrorLogin('Username atau kata sandi salah.');
+            } else if (e.code === 'auth/too-many-requests') {
+                tampilkanErrorLogin('Terlalu banyak percobaan gagal. Coba lagi beberapa saat lagi.');
+            } else {
+                tampilkanErrorLogin('Gagal login: ' + e.message);
+            }
+        }
+    }
+
+    window.keluarAdmin = function() {
+        signOut(auth);
+    }
+
+    // Pantau status login secara real-time. Ini juga yang menjaga sesi tetap aktif
+    // walau halaman di-refresh (Firebase Auth otomatis menyimpan sesi di browser).
+    onAuthStateChanged(auth, async (user) => {
+        const btn = document.getElementById('btnLoginAdmin');
+        if (!user) {
+            document.getElementById('dashboard-admin').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            if (btn) { btn.disabled = false; btn.innerText = 'MASUK SISTEM'; }
+            return;
+        }
+
+        // User berhasil login ke Firebase Auth -- tapi belum tentu dia admin!
+        // (Mitra resto juga punya akun Firebase Auth). Cek whitelist "admins/{uid}".
+        try {
+            const snap = await get(child(ref(database), `admins/${user.uid}`));
+            if (!snap.exists()) {
+                tampilkanErrorLogin('Akun ini tidak terdaftar sebagai admin.');
+                await signOut(auth);
+                return;
+            }
+        } catch (e) {
+            tampilkanErrorLogin('Gagal memverifikasi akses admin: ' + e.message);
+            await signOut(auth);
+            return;
+        }
+
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('dashboard-admin').classList.remove('hidden');
+        document.getElementById('adminUsername').value = '';
+        document.getElementById('adminPassword').value = '';
+
+        if (!listenerAdminSudahNyala) {
+            listenerAdminSudahNyala = true;
+            muatDataDriver();
+            muatDataResto();
+            muatDataOrder();
+            muatDataKeuangan();
+        }
+    });
+
+
+    // LOGIKA PINDAH TAB
+    window.bukaTab = function(namaTab) {
+        ['driver', 'resto', 'order', 'keuangan'].forEach(t => {
+            document.getElementById(`btn-tab-${t}`).classList.remove('active');
+            document.getElementById(`tab-${t}`).classList.add('hidden');
+        });
+        document.getElementById(`btn-tab-${namaTab}`).classList.add('active');
+        document.getElementById(`tab-${namaTab}`).classList.remove('hidden');
+    }
+
+    // ==========================================
+    // BAGIAN 1: MANAJEMEN DRIVER 
+    // ==========================================
+    function muatDataDriver() {
+        console.log("Memulai penarikan data driver...");
+        const driversRef = ref(database, 'drivers');
+        onValue(driversRef, (snapshot) => {
+            console.log("Respons database driver diterima:", snapshot.val());
+            allDriversData = [];
+            let totalAktif = 0;
+            let totalSaldoSistem = 0;
+
+            if(snapshot.exists()) {
+                snapshot.forEach((child) => { 
+                    const data = child.val() || {};
+                    data.wa = child.key || '00'; // Simpan WA sbg key
+                    allDriversData.push(data); 
+
+                    // Hitung Statistik
+                    if(data.status === 'aktif') totalAktif++;
+                    totalSaldoSistem += (data.saldo || 0);
+                });
+            }
+            
+            // Update UI Statistik
+            document.getElementById('adminStatDriver').innerText = totalAktif;
+            document.getElementById('adminStatSaldo').innerText = "Rp " + totalSaldoSistem.toLocaleString('id-ID');
+
+            renderDrivers(); // Panggil fungsi cetak UI
+        }, (error) => {
+            console.error("Gagal menarik data driver:", error);
+        });
+    }
+
+    // Fungsi Render UI Daftar Driver dengan Filter Pencarian
+    window.renderDrivers = function() {
+        const listDiv = document.getElementById('listDrivers');
+        listDiv.innerHTML = "";
+        
+        const keyword = document.getElementById('searchDriver').value.toLowerCase();
+
+        // Saring array driver berdasarkan input pencarian
+        const filteredDrivers = allDriversData.filter(d => 
+            (d.nama || '').toLowerCase().includes(keyword) || 
+            (d.wa || '').includes(keyword)
+        );
+
+        if(filteredDrivers.length === 0) {
+            listDiv.innerHTML = "<p style='color:#7f8c8d; font-style:italic;'>Ora ana driver sing ditemokna.</p>"; return;
+        }
+
+        filteredDrivers.forEach((data) => {
+            const wa = data.wa || '00';
+            const safeStatus = data.status || 'pending';
+            
+            let badgeClass = safeStatus === 'aktif' ? 'bg-aktif' : safeStatus === 'suspend' ? 'bg-suspend' : safeStatus === 'ditolak' ? 'bg-suspend' : 'bg-pending';
+            let saldoText = (data.saldo || 0).toLocaleString('id-ID');
+
+            let tombolAksi = "";
+            if(safeStatus === 'pending') {
+                tombolAksi = `<button class="btn-setuju" onclick="ubahStatusDriver('${wa}', 'aktif')">✅ Setujui (Aktifkan)</button><button class="btn-suspend" onclick="tolakPendaftaranDriver('${wa}')">✕ Tolak</button>`;
+            } else if(safeStatus === 'aktif') {
+                tombolAksi = `<button class="btn-suspend" onclick="ubahStatusDriver('${wa}', 'suspend')">⛔ Suspend Akun</button>`;
+            } else if(safeStatus === 'suspend') {
+                tombolAksi = `<button class="btn-setuju" onclick="ubahStatusDriver('${wa}', 'aktif')">✅ Buka Suspend (Aktifkan)</button>`;
+            } else if(safeStatus === 'ditolak') {
+                tombolAksi = `<button class="btn-setuju" onclick="ubahStatusDriver('${wa}', 'aktif')">✅ Terima Ulang (Aktifkan)</button>`;
+            }
+
+            let formTopUp = "";
+            if(safeStatus !== 'pending') {
+                formTopUp = `
+                    <div class="topup-box">
+                        <div style="font-size:12px; margin-bottom:5px; font-weight:800; color:#1e7e34;">Isi Saldo Driver:</div>
+                        <input type="number" id="topup-${wa}" placeholder="Ketik nominal (misal: 10000)">
+                        <button class="btn-topup" onclick="isiSaldo('${wa}', ${data.saldo || 0})">💰 Tambah Saldo</button>
+                    </div>
+                `;
+            }
+
+            const card = document.createElement('div');
+            card.className = `card ${safeStatus}`;
+            card.innerHTML = `
+                <div class="card-title">
+                    <span>${data.nama || 'Tanpa Nama'}</span>
+                    <span class="badge ${badgeClass}">${safeStatus.toUpperCase()}</span>
+                </div>
+                <div class="card-detail">📱 WA: <b><a href="https://wa.me/62${wa.substring(1)}" target="_blank" style="color:#2980b9; text-decoration:none;">${wa}</a></b></div>
+                <div class="card-detail">📅 Daftar: ${data.tanggal_daftar || '-'}</div>
+                <div class="saldo-text" style="${(data.saldo||0) < 0 ? 'color:#e74c3c;' : ''}">Saldo: Rp ${saldoText}${(data.saldo||0) < 0 ? ' ⚠️ MINUS' : ''}</div>
+                
+                ${formTopUp}
+
+                <div class="action-btns">
+                    ${tombolAksi}
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+
+    window.ubahStatusDriver = function(wa, statusBaru) {
+        if(confirm(`Yakin ingin mengubah status driver ini menjadi ${statusBaru.toUpperCase()}?`)) {
+            update(ref(database, `drivers/${wa}`), { status: statusBaru, alasan_tolak: null })
+                .then(() => alert("Status berhasil diubah!"))
+                .catch(e => alert("Gagal: " + e));
+        }
+    }
+
+    // Tolak pendaftaran driver yang masih 'pending' -- beda dari suspend (yang untuk
+    // akun yang sudah pernah aktif). Alasan opsional disimpan biar bisa dicek lagi nanti.
+    window.tolakPendaftaranDriver = function(wa) {
+        const alasan = prompt('Alasan penolakan (opsional, misal: data tidak lengkap):') || '';
+        if (!confirm('Tolak pendaftaran driver ini?')) return;
+        update(ref(database, `drivers/${wa}`), { status: 'ditolak', alasan_tolak: alasan })
+            .then(() => alert('Pendaftaran ditolak.'))
+            .catch(e => alert('Gagal: ' + e));
+    }
+
+    window.isiSaldo = function(wa, saldoSaatIni) {
+        const inputNominal = document.getElementById(`topup-${wa}`).value;
+        const nominal = parseInt(inputNominal);
+
+        if(!nominal || nominal <= 0) {
+            alert("Masukkan angka nominal yang benar!"); return;
+        }
+
+        if(confirm(`Yakin ingin menambahkan Rp ${nominal.toLocaleString('id-ID')} ke akun ini?`)) {
+            const saldoBaru = saldoSaatIni + nominal;
+            update(ref(database, `drivers/${wa}`), { saldo: saldoBaru })
+                .then(() => {
+                    alert("Berhasil! Saldo driver otomatis bertambah.");
+                    document.getElementById(`topup-${wa}`).value = ""; 
+                })
+                .catch(e => alert("Gagal isi saldo: " + e));
+        }
+    }
+
+    // ==========================================
+    // BAGIAN 1B: MANAJEMEN RESTO
+    // ==========================================
+    function muatDataResto() {
+        const restoRef = ref(database, 'restoran');
+        onValue(restoRef, (snapshot) => {
+            allRestoranData = [];
+            let totalAktif = 0;
+
+            if(snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    const data = child.val() || {};
+                    data.wa = child.key || '00'; // Simpan WA sbg key
+                    allRestoranData.push(data);
+                    if(data.status === 'aktif') totalAktif++;
+                });
+            }
+
+            document.getElementById('adminStatResto').innerText = totalAktif;
+            renderRestoran();
+        }, (error) => {
+            console.error("Gagal menarik data resto:", error);
+        });
+    }
+
+    window.renderRestoran = function() {
+        const listDiv = document.getElementById('listResto');
+        listDiv.innerHTML = "";
+
+        const keyword = document.getElementById('searchResto').value.toLowerCase();
+        const filteredResto = allRestoranData.filter(d =>
+            (d.nama || '').toLowerCase().includes(keyword) ||
+            (d.wa || '').includes(keyword)
+        );
+
+        if(filteredResto.length === 0) {
+            listDiv.innerHTML = "<p style='color:#7f8c8d; font-style:italic;'>Ora ana resto sing ditemokna.</p>"; return;
+        }
+
+        filteredResto.forEach((data) => {
+            const wa = data.wa || '00';
+            const safeStatus = data.status || 'pending';
+            const jumlahMenu = data.menu ? Object.keys(data.menu).length : 0;
+            const lokasiText = (data.lat && data.lng) ? `✅ Sudah diatur` : `⚠️ Belum diatur`;
+
+            let badgeClass = safeStatus === 'aktif' ? 'bg-aktif' : safeStatus === 'suspend' ? 'bg-suspend' : safeStatus === 'ditolak' ? 'bg-suspend' : 'bg-pending';
+
+            let tombolAksi = "";
+            if(safeStatus === 'pending') {
+                tombolAksi = `<button class="btn-setuju" onclick="ubahStatusResto('${wa}', 'aktif')">✅ Setujui (Aktifkan)</button><button class="btn-suspend" onclick="tolakPendaftaranResto('${wa}')">✕ Tolak</button>`;
+            } else if(safeStatus === 'aktif') {
+                tombolAksi = `<button class="btn-suspend" onclick="ubahStatusResto('${wa}', 'suspend')">⛔ Suspend Akun</button>`;
+            } else if(safeStatus === 'suspend') {
+                tombolAksi = `<button class="btn-setuju" onclick="ubahStatusResto('${wa}', 'aktif')">✅ Buka Suspend (Aktifkan)</button>`;
+            } else if(safeStatus === 'ditolak') {
+                tombolAksi = `<button class="btn-setuju" onclick="ubahStatusResto('${wa}', 'aktif')">✅ Terima Ulang (Aktifkan)</button>`;
+            }
+
+            const card = document.createElement('div');
+            card.className = `card ${safeStatus}`;
+            card.innerHTML = `
+                <div class="card-title">
+                    <span>${data.nama || 'Tanpa Nama'}</span>
+                    <span class="badge ${badgeClass}">${safeStatus.toUpperCase()}</span>
+                </div>
+                <div class="card-detail">📱 WA: <b><a href="https://wa.me/62${wa.substring(1)}" target="_blank" style="color:#2980b9; text-decoration:none;">${wa}</a></b></div>
+                <div class="card-detail">📍 Alamat: ${data.alamat || '-'}</div>
+                <div class="card-detail">🗺️ Titik Lokasi: ${lokasiText}</div>
+                <div class="card-detail">📋 Jumlah Menu: ${jumlahMenu}</div>
+                <div class="card-detail">📅 Daftar: ${data.tanggal_daftar || '-'}</div>
+                <div class="card-detail">🏪 Warung: ${data.buka === false ? 'Sedang Tutup' : 'Buka'}</div>
+
+                <div class="action-btns">
+                    ${tombolAksi}
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+
+    window.ubahStatusResto = function(wa, statusBaru) {
+        if(confirm(`Yakin ingin mengubah status resto ini menjadi ${statusBaru.toUpperCase()}?`)) {
+            update(ref(database, `restoran/${wa}`), { status: statusBaru, alasan_tolak: null })
+                .then(() => alert("Status berhasil diubah!"))
+                .catch(e => alert("Gagal: " + e));
+        }
+    }
+
+    // Tolak pendaftaran resto yang masih 'pending'.
+    window.tolakPendaftaranResto = function(wa) {
+        const alasan = prompt('Alasan penolakan (opsional, misal: data tidak lengkap):') || '';
+        if (!confirm('Tolak pendaftaran resto ini?')) return;
+        update(ref(database, `restoran/${wa}`), { status: 'ditolak', alasan_tolak: alasan })
+            .then(() => alert('Pendaftaran ditolak.'))
+            .catch(e => alert('Gagal: ' + e));
+    }
+
+    // ==========================================
+    // BAGIAN 2: PANTAU ORDERAN & EXPORT EXCEL
+    // ==========================================
+    function muatDataOrder() {
+        console.log("Memulai penarikan data pesanan...");
+        const ordersRef = ref(database, 'orders');
+        onValue(ordersRef, (snapshot) => {
+            console.log("Respons database pesanan diterima:", snapshot.val());
+            allOrdersData = [];
+            let totalOrderSelesai = 0;
+            let totalPemasukanAdmin = 0;
+
+            if(snapshot.exists()) {
+                snapshot.forEach((child) => { 
+                    const data = child.val() || {};
+                    data.id = child.key;
+                    allOrdersData.push(data); 
+
+                    // Hitung Statistik Pemasukan (Dari orderan yang Selesai). Ini HARUS
+                    // mengikuti logika potongan saldo driver di driver.html:
+                    // - Setiap order yang sampai 'selesai' menyumbang biaya platform flat
+                    //   BIAYA_PLATFORM (dipotong saat driver ambil order, TIDAK dikembalikan
+                    //   lagi begitu order selesai).
+                    // - Order makanan: tambahan biaya_layanan_makanan (dibayar customer per
+                    //   item, dipotong dari saldo driver saat order ditandai selesai --
+                    //   nilainya baru pasti setelah order diambil).
+                    // - Order non-makanan (Antar Jemput/Kirim Barang/dll): tambahan
+                    //   biaya_layanan_jasa (flat Rp1.000, dibayar customer cash). BEDA
+                    //   dengan food, ini dipotong DI DEPAN bareng BIAYA_PLATFORM saat driver
+                    //   ambil order (total potongan langsung Rp2.000), bukan saat selesai --
+                    //   tapi tetap cuma dihitung sebagai pemasukan kalau order sampai
+                    //   'selesai', karena kalau dibatalkan Rp2.000 itu dikembalikan penuh.
+                    if(data.status === 'selesai') {
+                        totalOrderSelesai++;
+                        totalPemasukanAdmin += BIAYA_PLATFORM + (data.biaya_layanan_makanan || 0) + (data.biaya_layanan_jasa || 0);
+                    }
+                });
+            }
+
+            // Update UI Statistik Orderan & Pemasukan
+            document.getElementById('adminStatOrder').innerText = totalOrderSelesai;
+            document.getElementById('adminStatPendapatan').innerText = "Rp " + totalPemasukanAdmin.toLocaleString('id-ID');
+
+            allOrdersData.reverse(); // Terbaru di atas
+            renderOrdersUI();
+        }, (error) => {
+            console.error("Gagal menarik data pesanan:", error);
+        });
+    }
+
+    // Render daftar order dengan filter pencarian teks & status.
+    // Dipanggil ulang tiap kali data berubah (realtime) ATAU tiap kali admin mengetik
+    // di kotak cari / ganti dropdown status -- tanpa perlu menarik ulang data dari Firebase.
+    window.renderOrdersUI = function() {
+        const listDiv = document.getElementById('listOrders');
+        if (!listDiv) return;
+        listDiv.innerHTML = "";
+
+        const keyword = (document.getElementById('searchOrder')?.value || '').toLowerCase();
+        const filterStatus = document.getElementById('filterStatusOrder')?.value || '';
+
+        const filtered = allOrdersData.filter(data => {
+            if (filterStatus && data.status !== filterStatus) return false;
+            if (!keyword) return true;
+            const gabungan = [data.customer_nama, data.driver_nama, data.resto_nama, data.layanan, data.customer_wa]
+                .map(v => (v || '').toString().toLowerCase()).join(' ');
+            return gabungan.includes(keyword);
+        });
+
+        if(filtered.length === 0) {
+            listDiv.innerHTML = "<p style='font-weight:600; color:#7f8c8d;'>Tidak ada pesanan yang cocok dengan pencarian/filter ini.</p>"; return;
+        }
+
+        filtered.forEach((data) => {
+                const safeStatus = data.status || 'pending';
+                let statusColor = safeStatus === 'selesai' ? '#27ae60' : safeStatus === 'batal' || safeStatus === 'batal_cust' ? '#e74c3c' : safeStatus === 'diambil' ? '#2980b9' : '#f39c12';
+                
+                let waktuTampil = data.waktu_order || ''; 
+                if (data.timestamp) {
+                    const dt = new Date(data.timestamp);
+                    const tgl = dt.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    const jam = dt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                    waktuTampil = `${tgl} - ${jam} WIB`;
+                }
+
+                // LOGIKA MENAMPILKAN ULASAN JIKA ADA
+                let ulasanHtml = data.ulasan ? `
+                    <div class="card-detail" style="margin-top:10px; background:#fdf2e9; padding:12px; border-radius:8px; border-left:4px solid #8e44ad; color:#8e44ad; font-style:italic; font-weight:700;">
+                        💬 <b>Ulasan Pelanggan:</b><br>"${data.ulasan}"
+                    </div>
+                ` : '';
+
+                // Total biaya layanan (makanan ATAU jasa non-makanan) yang seharusnya
+                // dikumpulkan driver dari customer secara cash.
+                const totalBiayaLayanan = (data.biaya_layanan_makanan || 0) + (data.biaya_layanan_jasa || 0);
+                const biayaLayananHtml = totalBiayaLayanan > 0
+                    ? `<div class="card-detail">🧾 Biaya Layanan (dari customer): <b>Rp ${totalBiayaLayanan.toLocaleString('id-ID')}</b></div>`
+                    : '';
+
+                // Tandai order yang sudah lama nyangkut di status belum final (bukan
+                // selesai/batal/ditolak) -- indikasi kemungkinan macet dan butuh dicek admin.
+                const statusFinal = ['selesai', 'batal', 'batal_cust', 'ditolak_resto'];
+                const isFinal = statusFinal.includes(data.status);
+                const sudahLama = data.timestamp && (Date.now() - data.timestamp) > (2 * 60 * 60 * 1000); // > 2 jam
+                const macetHtml = (!isFinal && sudahLama)
+                    ? `<div class="card-detail" style="margin-top:8px; color:#c0392b; font-weight:800; background:#fdecea; padding:8px; border-radius:6px; border:1px solid #f5b7b1;">⚠️ Order ini sudah lebih dari 2 jam belum selesai -- cek kemungkinan macet.</div>`
+                    : '';
+
+                // Aksi intervensi manual untuk order yang belum final (misal driver hilang
+                // kontak, atau lupa tandai selesai). Tidak muncul untuk order yang sudah final.
+                let aksiIntervensi = '';
+                if (!isFinal) {
+                    aksiIntervensi += `<button class="btn-suspend" style="flex:1;" onclick="batalkanPaksaOrder('${data.id}')">🛑 Batalkan Paksa</button>`;
+                    if (data.status === 'diambil') {
+                        aksiIntervensi += `<button class="btn-setuju" style="flex:1;" onclick="paksaSelesaikanOrder('${data.id}')">✅ Tandai Selesai (Paksa)</button>`;
+                    }
+                }
+
+                const customerWA = data.customer_wa || '00';
+
+                const card = document.createElement('div');
+                card.className = "card";
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="font-size:11px; color:#7f8c8d; font-weight:800;">${waktuTampil}</span>
+                        <span style="font-size:11px; font-weight:800; color:${statusColor}; text-transform:uppercase; padding:3px 8px; border-radius:12px; border:1px solid ${statusColor}40; background:${statusColor}10;">${safeStatus}</span>
+                    </div>
+                    <div class="card-title" style="font-size: 16px;">${data.layanan || 'Layanan Tidak Diketahui'}</div>
+                    <div class="card-detail">👤 Cust: ${data.customer_nama || 'Tanpa Nama'} (<a href="https://wa.me/62${customerWA.substring(1)}" target="_blank" style="color:#2980b9; text-decoration:none;">${customerWA}</a>)</div>
+                    <div class="card-detail">🛵 Driver: <b>${data.driver_nama || 'Belum ada'}</b> ${data.rating ? ' (⭐'+data.rating+')' : ''}</div>
+                    ${biayaLayananHtml}
+                    <div class="card-detail" style="margin-top:12px; background:#f8f9fa; padding:10px; border-radius:6px; border:1px solid #eee;">
+                        ${data.detail_1 || '-'} <br><span style="color:#bdc3c7;">⬇</span><br> ${data.detail_2 || '-'}
+                    </div>
+                    ${data.catatan ? `<div class="card-detail" style="margin-top:8px; color:#d35400; font-weight:700; background:#fff3e0; padding:8px; border-radius:6px;">📝 Catatan: ${data.catatan}</div>` : ''}
+                    
+                    ${ulasanHtml}
+                    ${macetHtml}
+                    
+                    ${aksiIntervensi ? `<div class="action-btns">${aksiIntervensi}</div>` : ''}
+                    <div style="margin-top:10px; text-align:right;">
+                        <button class="btn-hapus" onclick="hapusOrder('${data.id}')">🗑️ Hapus Data Lama</button>
+                    </div>
+                `;
+                listDiv.appendChild(card);
+        });
+    }
+
+    // FUNGSI DOWNLOAD KE EXCEL (.CSV)
+    window.exportToCSV = function() {
+        if(allOrdersData.length === 0) { alert("Belum ada data pesanan untuk di-download."); return; }
+        
+        let csvContent = "Tanggal & Waktu,Layanan,Status,Nama Customer,WA Customer,Nama Driver,Detail 1 (Penjemputan),Detail 2 (Tujuan),Catatan,Bintang (Rating),Ulasan\n";
+        
+        allOrdersData.forEach(o => {
+            let waktuStr = o.waktu_order || "";
+            if(o.timestamp) {
+                let dt = new Date(o.timestamp);
+                waktuStr = dt.toLocaleDateString('id-ID') + " " + dt.toLocaleTimeString('id-ID');
+            }
+            
+            let lay = `"${(o.layanan||"").replace(/"/g, '""')}"`;
+            let stat = `"${(o.status||"").replace(/"/g, '""')}"`;
+            let cNama = `"${(o.customer_nama||"").replace(/"/g, '""')}"`;
+            let cWa = `"${(o.customer_wa||"").replace(/"/g, '""')}"`;
+            let dNama = `"${(o.driver_nama||"").replace(/"/g, '""')}"`;
+            let d1 = `"${(o.detail_1||"").replace(/"/g, '""')}"`;
+            let d2 = `"${(o.detail_2||"").replace(/"/g, '""')}"`;
+            let cat = `"${(o.catatan||"").replace(/"/g, '""')}"`;
+            let rat = o.rating || "";
+            let uls = `"${(o.ulasan||"").replace(/"/g, '""')}"`;
+
+            csvContent += `${waktuStr},${lay},${stat},${cNama},${cWa},${dNama},${d1},${d2},${cat},${rat},${uls}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Laporan_TTG_" + new Date().toLocaleDateString('id-ID') + ".csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    window.hapusOrder = function(id) {
+        if(confirm("Yakin hapus data pesanan ini secara permanen?")) {
+            remove(ref(database, `orders/${id}`))
+                .then(() => console.log("Terhapus"))
+                .catch(e => alert("Gagal hapus: " + e));
+        }
+    }
+
+    // ── INTERVENSI MANUAL ORDER MACET ──
+    // Dipakai kalau order nyangkut (misal driver hilang kontak, atau lupa tandai selesai
+    // di app-nya sendiri). Ini menggantikan cara lama yang cuma bisa "Hapus" -- padahal
+    // hapus tidak mengembalikan/memotong saldo driver dengan benar.
+
+    // Batalkan paksa order yang belum final. Kalau order sudah sempat diambil driver
+    // (status 'diambil'), saldo yang sudah terpotong dikembalikan -- sama seperti kalau
+    // driver sendiri yang membatalkan. Untuk order non-makanan, ini termasuk
+    // biaya_layanan_jasa karena SEKARANG dipotong di depan (saat ambil), bukan lagi di
+    // saat selesai -- lihat hitungTotalPotonganAmbil di driver.html.
+    window.batalkanPaksaOrder = function(orderId) {
+        const data = allOrdersData.find(o => o.id === orderId);
+        if (!data) return;
+        const alasan = prompt('Alasan pembatalan paksa (opsional, misal: driver hilang kontak):') || '';
+        if (!confirm('Batalkan paksa pesanan ini? Tindakan ini untuk order yang macet/tidak ada progres.')) return;
+
+        update(ref(database, `orders/${orderId}`), { status: 'batal', alasan_batal_admin: alasan }).then(() => {
+            if (data.status === 'diambil' && data.driver_wa) {
+                const totalDikembalikan = BIAYA_PLATFORM + (data.biaya_layanan_jasa || 0);
+                const driver = allDriversData.find(d => d.wa === data.driver_wa);
+                const saldoSaatIni = driver ? (driver.saldo || 0) : 0;
+                update(ref(database, `drivers/${data.driver_wa}`), { saldo: saldoSaatIni + totalDikembalikan })
+                    .catch(e => alert('Order dibatalkan, tapi gagal mengembalikan saldo driver: ' + e));
+            }
+            alert('Pesanan dibatalkan paksa.');
+        }).catch(e => alert('Gagal: ' + e));
+    }
+
+    // Tandai order 'diambil' sebagai selesai secara paksa (driver lupa/tidak bisa
+    // menandai selesai di app-nya). Ikuti logika potongan saldo yang sama dengan
+    // selesaikanOrderanDriver di driver.html: biaya_layanan_jasa (non-makanan) SUDAH
+    // dipotong di depan saat order diambil, jadi TIDAK dipotong lagi di sini. Cuma
+    // biaya_layanan_makanan (order makanan, nilainya baru pasti setelah diambil) yang
+    // masih dipotong di titik "selesai" ini.
+    window.paksaSelesaikanOrder = function(orderId) {
+        const data = allOrdersData.find(o => o.id === orderId);
+        if (!data) return;
+        const biayaLayanan = data.biaya_layanan_makanan || 0;
+        let pesan = 'Tandai pesanan ini selesai secara paksa?';
+        if (biayaLayanan > 0 && data.driver_wa) {
+            pesan += `\n\nSaldo driver akan otomatis terpotong Rp ${biayaLayanan.toLocaleString('id-ID')} (biaya layanan makanan).`;
+        }
+        if (!confirm(pesan)) return;
+
+        update(ref(database, `orders/${orderId}`), { status: 'selesai' }).then(() => {
+            if (biayaLayanan > 0 && data.driver_wa) {
+                const driver = allDriversData.find(d => d.wa === data.driver_wa);
+                const saldoSaatIni = driver ? (driver.saldo || 0) : 0;
+                update(ref(database, `drivers/${data.driver_wa}`), { saldo: saldoSaatIni - biayaLayanan })
+                    .catch(e => alert('Order ditandai selesai, tapi gagal memotong saldo driver: ' + e));
+            }
+            alert('Pesanan ditandai selesai.');
+        }).catch(e => alert('Gagal: ' + e));
+    }
+
+    // ==========================================
+    // BAGIAN 3: KEUANGAN (PEMASUKAN & PENGELUARAN)
+    // ==========================================
+    function muatDataKeuangan() {
+        console.log("Memulai penarikan data keuangan...");
+        const keuRef = ref(database, 'keuangan');
+        onValue(keuRef, (snapshot) => {
+            allKeuanganData = [];
+            let totalMasuk = 0, totalKeluar = 0;
+
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    const data = child.val() || {};
+                    data.id = child.key;
+                    allKeuanganData.push(data);
+                    if (data.jenis === 'pemasukan') totalMasuk += (data.nominal || 0);
+                    else totalKeluar += (data.nominal || 0);
+                });
+            }
+
+            document.getElementById('keuStatPemasukan').innerText = "Rp " + totalMasuk.toLocaleString('id-ID');
+            document.getElementById('keuStatPengeluaran').innerText = "Rp " + totalKeluar.toLocaleString('id-ID');
+            document.getElementById('keuStatSaldo').innerText = "Rp " + (totalMasuk - totalKeluar).toLocaleString('id-ID');
+
+            renderKeuangan();
+        }, (error) => {
+            console.error("Gagal menarik data keuangan:", error);
+        });
+    }
+
+    // Pilih jenis transaksi (toggle tombol Pemasukan/Pengeluaran)
+    window.pilihJenisKeuangan = function(jenis) {
+        jenisKeuanganAktif = jenis;
+        document.getElementById('btnJenisPemasukan').classList.toggle('selected', jenis === 'pemasukan');
+        document.getElementById('btnJenisPengeluaran').classList.toggle('selected', jenis === 'pengeluaran');
+    }
+
+    // Simpan transaksi baru (pemasukan/pengeluaran)
+    window.simpanTransaksiKeuangan = function() {
+        const ket = document.getElementById('keuKeterangan').value.trim();
+        const nominal = parseInt(document.getElementById('keuNominal').value);
+
+        if (!ket) { alert("Isi keterangan transaksinya dulu lur!"); return; }
+        if (!nominal || nominal <= 0) { alert("Masukkan nominal yang benar!"); return; }
+
+        const newRef = push(ref(database, 'keuangan'));
+        set(newRef, {
+            jenis: jenisKeuanganAktif,
+            keterangan: ket,
+            nominal: nominal,
+            timestamp: Date.now(),
+        }).then(() => {
+            document.getElementById('keuKeterangan').value = "";
+            document.getElementById('keuNominal').value = "";
+        }).catch(e => alert("Gagal simpan transaksi: " + e));
+    }
+
+    // Render daftar riwayat transaksi keuangan
+    window.renderKeuangan = function() {
+        const listDiv = document.getElementById('listKeuangan');
+        listDiv.innerHTML = "";
+
+        if (allKeuanganData.length === 0) {
+            listDiv.innerHTML = "<p style='font-weight:600; color:#7f8c8d;'>Urung ana transaksi keuangan.</p>";
+            return;
+        }
+
+        const sorted = [...allKeuanganData].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        sorted.forEach((data) => {
+            const isMasuk = data.jenis === 'pemasukan';
+            const warna = isMasuk ? '#27ae60' : '#e74c3c';
+            const tanda = isMasuk ? '+' : '-';
+
+            let waktuTampil = '-';
+            if (data.timestamp) {
+                const dt = new Date(data.timestamp);
+                waktuTampil = dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + ' - ' + dt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            const card = document.createElement('div');
+            card.className = "card";
+            card.style.borderTopColor = warna;
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span style="font-size:11px; color:#7f8c8d; font-weight:800;">${waktuTampil}</span>
+                    <span style="font-size:11px; font-weight:800; color:${warna}; text-transform:uppercase; padding:3px 8px; border-radius:12px; border:1px solid ${warna}40; background:${warna}10;">${isMasuk ? 'PEMASUKAN' : 'PENGELUARAN'}</span>
+                </div>
+                <div class="card-title" style="font-size:15px;">${data.keterangan || '-'}</div>
+                <div class="nominal-besar" style="color:${warna};">${tanda} Rp ${(data.nominal || 0).toLocaleString('id-ID')}</div>
+                <div style="text-align:right; margin-top:10px;">
+                    <button class="btn-hapus" onclick="hapusKeuangan('${data.id}')">🗑️ Hapus</button>
+                </div>
+            `;
+            listDiv.appendChild(card);
+        });
+    }
+
+    window.hapusKeuangan = function(id) {
+        if (confirm("Yakin hapus transaksi ini secara permanen?")) {
+            remove(ref(database, `keuangan/${id}`))
+                .then(() => console.log("Transaksi terhapus"))
+                .catch(e => alert("Gagal hapus: " + e));
+        }
+    }
+
+    // Export riwayat keuangan ke CSV
+    window.exportKeuanganCSV = function() {
+        if (allKeuanganData.length === 0) { alert("Belum ada data transaksi untuk di-download."); return; }
+
+        let csvContent = "Tanggal & Waktu,Jenis,Keterangan,Nominal\n";
+        const sorted = [...allKeuanganData].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        sorted.forEach(d => {
+            let waktuStr = "";
+            if (d.timestamp) {
+                const dt = new Date(d.timestamp);
+                waktuStr = dt.toLocaleDateString('id-ID') + " " + dt.toLocaleTimeString('id-ID');
+            }
+            const jenis = d.jenis === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran';
+            const ket = `"${(d.keterangan || "").replace(/"/g, '""')}"`;
+            csvContent += `${waktuStr},${jenis},${ket},${d.nominal || 0}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Laporan_Keuangan_TTG_" + new Date().toLocaleDateString('id-ID') + ".csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+</script>
+</body>
+</html>
