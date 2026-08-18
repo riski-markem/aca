@@ -227,7 +227,7 @@
 
     // ── FIREBASE ASLI TULANGTULUNG GOMBONG ──
     const firebaseConfig = {
-        apiKey: "AIzaSyC04vDd6Z1NnrMx5gK7nMCyDceaGZj_bQw",
+        apiKey: "AIzaSyCO4vDd6Z1NnrMx5gK7nMCyDceaGZj_bQw",
         authDomain: "mastulungmasgombong.firebaseapp.com",
         databaseURL: "https://mastulungmasgombong-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "mastulungmasgombong",
@@ -253,6 +253,27 @@
     let allKeuanganData = [];
     let jenisKeuanganAktif = 'pemasukan';
     let listenerAdminSudahNyala = false; // biar onValue tidak didaftarkan berkali-kali tiap login ulang
+
+    // Total Pemasukan Admin dari orderan selesai (dihitung di muatDataOrder) & total
+    // pemasukan/pengeluaran manual dari menu Keuangan (dihitung di muatDataKeuangan).
+    // Disimpan sebagai variabel global karena dua-duanya berasal dari listener Firebase
+    // yang berbeda dan berjalan async -- supaya kartu "Total Pemasukan" di menu Keuangan
+    // selalu bisa digabung ulang begitu salah satu datanya berubah.
+    let totalPemasukanAdminGlobal = 0;
+    let totalPemasukanManualGlobal = 0;
+    let totalPengeluaranManualGlobal = 0;
+
+    // Update kartu "Total Pemasukan" & "Saldo" di menu Keuangan supaya SELALU menyatukan
+    // pemasukan otomatis dari orderan (Biaya Platform + Layanan) dengan pemasukan manual
+    // yang diinput admin di menu Keuangan (kalau ada). Dipanggil ulang tiap kali salah satu
+    // sumber datanya berubah (order baru selesai, ATAU transaksi keuangan manual ditambah/hapus).
+    function updateKeuStatPemasukan() {
+        const totalPemasukanGabungan = totalPemasukanAdminGlobal + totalPemasukanManualGlobal;
+        const elPemasukan = document.getElementById('keuStatPemasukan');
+        const elSaldo = document.getElementById('keuStatSaldo');
+        if (elPemasukan) elPemasukan.innerText = "Rp " + totalPemasukanGabungan.toLocaleString('id-ID');
+        if (elSaldo) elSaldo.innerText = "Rp " + (totalPemasukanGabungan - totalPengeluaranManualGlobal).toLocaleString('id-ID');
+    }
 
     // ── LOGIN ADMIN (Firebase Auth asli, BUKAN PIN statis) ──
     // Akun admin dibuat manual lewat Firebase Console > Authentication > Add User.
@@ -623,7 +644,24 @@
                     //   'selesai', karena kalau dibatalkan Rp2.000 itu dikembalikan penuh.
                     if(data.status === 'selesai') {
                         totalOrderSelesai++;
-                        totalPemasukanAdmin += BIAYA_PLATFORM + (data.biaya_layanan_makanan || 0) + (data.biaya_layanan_jasa || 0);
+                        const kontribusi = BIAYA_PLATFORM + (data.biaya_layanan_makanan || 0) + (data.biaya_layanan_jasa || 0);
+                        totalPemasukanAdmin += kontribusi;
+
+                        // DEBUG: harusnya BIAYA_PLATFORM, biaya_layanan_makanan, & biaya_layanan_jasa
+                        // SELALU flat Rp1.000 (lihat index.html), jadi kontribusi tiap order selesai
+                        // harusnya selalu kelipatan Rp1.000. Kalau ada order lama/rusak yang nilainya
+                        // bukan kelipatan 1.000 (sisa dari skema biaya lama sebelum jadi flat, atau
+                        // data yang diedit manual), order-nya dicatat di sini biar gampang dilacak
+                        // lewat DevTools Console (F12) tanpa harus nyisir Firebase satu-satu.
+                        if (kontribusi % 1000 !== 0) {
+                            console.warn('[Keuangan] Order dengan kontribusi TIDAK kelipatan Rp1.000:', {
+                                id: data.id,
+                                kontribusi,
+                                biaya_layanan_makanan: data.biaya_layanan_makanan || 0,
+                                biaya_layanan_jasa: data.biaya_layanan_jasa || 0,
+                                tipe_order: data.tipe_order || data.jenis_order || '-',
+                            });
+                        }
                     }
                 });
             }
@@ -631,6 +669,11 @@
             // Update UI Statistik Orderan & Pemasukan
             document.getElementById('adminStatOrder').innerText = totalOrderSelesai;
             document.getElementById('adminStatPendapatan').innerText = "Rp " + totalPemasukanAdmin.toLocaleString('id-ID');
+
+            // Simpan ke variabel global & sinkronkan kartu "Total Pemasukan" di menu Keuangan
+            // (lihat updateKeuStatPemasukan) supaya dua-duanya selalu konsisten.
+            totalPemasukanAdminGlobal = totalPemasukanAdmin;
+            updateKeuStatPemasukan();
 
             allOrdersData.reverse(); // Terbaru di atas
             renderOrdersUI();
@@ -858,9 +901,14 @@
                 });
             }
 
-            document.getElementById('keuStatPemasukan').innerText = "Rp " + totalMasuk.toLocaleString('id-ID');
+            // "Total Pemasukan" di menu ini = Total Pemasukan Admin (Biaya Platform + Layanan,
+            // otomatis dari orderan selesai) DITAMBAH transaksi 'pemasukan' manual yang diinput
+            // sendiri di menu Keuangan (kalau ada). Nilainya digabung lewat updateKeuStatPemasukan()
+            // supaya selalu sinkron dengan kartu Total Pemasukan Admin di atas.
+            totalPemasukanManualGlobal = totalMasuk;
+            totalPengeluaranManualGlobal = totalKeluar;
             document.getElementById('keuStatPengeluaran').innerText = "Rp " + totalKeluar.toLocaleString('id-ID');
-            document.getElementById('keuStatSaldo').innerText = "Rp " + (totalMasuk - totalKeluar).toLocaleString('id-ID');
+            updateKeuStatPemasukan();
 
             renderKeuangan();
         }, (error) => {
