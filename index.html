@@ -1010,6 +1010,7 @@
     import { getDatabase, ref, push, set, onValue, off, update, runTransaction, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
     // ── FIREBASE TULANGTULUNG GOMBONG ──
     const firebaseConfig = {
@@ -1028,6 +1029,18 @@
     const storage = getStorage(app);
     let messaging;
     try { messaging = getMessaging(app); } catch(e) {}
+
+    // ── AUTH ANONIM ──
+    // Dipakai supaya Storage Rules bisa mensyaratkan "harus login" (request.auth != null)
+    // tanpa customer perlu isi form apapun -- login anonim jalan otomatis di background.
+    // _authSiap dipakai fitur lain (misal kirim foto chat) buat nunggu login ini kelar dulu.
+    const auth = getAuth(app);
+    let _authSiap = new Promise((resolve) => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) { resolve(user); return; }
+            signInAnonymously(auth).catch((e) => console.error('Auth anonim gagal:', e));
+        });
+    });
 
     // ── VAPID KEY TULANGTULUNG GOMBONG ──
     const VAPID_KEY = "BHrjLUSNG-h2NcRw_ypWBHTr3cc-iEZ7jCA8fYzjrWO6Yh4Sqg3xTevCEAcUAbncnWwrZZfOXkuFeWMQCHnkLDs";
@@ -2933,6 +2946,7 @@
         const tombol = document.querySelector('.chat-btn-foto');
         if (tombol) { tombol.disabled = true; tombol.innerText = '⏳'; }
         try {
+            await _authSiap;
             const blob = await kompresGambarChat(file, 1000, 0.7);
             const path = `chat-foto/${_chatOrderIdAktif}/${Date.now()}.jpg`;
             const fileRef = storageRef(storage, path);
