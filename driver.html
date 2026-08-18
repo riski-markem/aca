@@ -274,6 +274,11 @@
         .chat-input-bar { display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--border); background:var(--card); flex-shrink:0; }
         .chat-input-bar input { flex:1; border:1px solid var(--border); border-radius:22px; padding:11px 16px; font-size:13.5px; font-family:inherit; outline:none; background:var(--bg); }
         .chat-input-bar button { background:var(--primary); color:#fff; border:none; width:42px; height:42px; border-radius:50%; font-size:16px; cursor:pointer; flex-shrink:0; }
+        .chat-btn-lokasi { background:#27ae60 !important; }
+        .chat-bubble-lokasi { display:flex; align-items:center; gap:8px; text-decoration:none; }
+        .chat-bubble-lokasi span.lbl { font-weight:700; }
+        .chat-bubble.mine .chat-bubble-lokasi { color:#fff; }
+        .chat-bubble.theirs .chat-bubble-lokasi { color:var(--text); }
         .btn-chat-cust { position:relative; }
         .btn-chat-cust .chat-unread-dot { position:absolute; top:-3px; right:-3px; width:10px; height:10px; background:#EF4444; border-radius:50%; border:2px solid #fff; display:none; }
         .btn-chat-cust.has-unread .chat-unread-dot { display:block; }
@@ -317,6 +322,7 @@
         </div>
         <div class="chat-messages" id="chatMessagesBox"></div>
         <div class="chat-input-bar">
+            <button class="chat-btn-lokasi" onclick="kirimLokasiChat()" title="Bagikan lokasi GPS saat ini">📍</button>
             <input type="text" id="chatInputTeks" placeholder="Tulis pesan..." onkeypress="if(event.key==='Enter'){event.preventDefault();kirimPesanChat();}">
             <button onclick="kirimPesanChat()">➤</button>
         </div>
@@ -1518,7 +1524,11 @@
                     const m = c.val();
                     const mine = m.from === 'driver';
                     const jam = m.waktu ? new Date(m.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '';
-                    html += `<div class="chat-bubble ${mine?'mine':'theirs'}">${_escHtmlChat(m.teks)}<span class="chat-bubble-time">${jam}</span></div>`;
+                    if (m.tipe === 'lokasi' && m.lat && m.lng) {
+                        html += `<div class="chat-bubble ${mine?'mine':'theirs'}"><a class="chat-bubble-lokasi" href="https://www.google.com/maps?q=${m.lat},${m.lng}" target="_blank" rel="noopener">📍 <span class="lbl">Lihat Lokasi di Maps</span></a><span class="chat-bubble-time">${jam}</span></div>`;
+                    } else {
+                        html += `<div class="chat-bubble ${mine?'mine':'theirs'}">${_escHtmlChat(m.teks)}<span class="chat-bubble-time">${jam}</span></div>`;
+                    }
                 });
                 box.innerHTML = html;
                 box.scrollTop = box.scrollHeight;
@@ -1548,6 +1558,35 @@
         input.value = '';
     }
 
+    // Kirim lokasi GPS driver saat ini lewat chat -- berguna kalau customer susah nemuin
+    // driver di titik jemput, atau driver mau kasih tahu posisi terkini tanpa telepon.
+    // Sama seperti di index.html: cuma koordinat, direndernya jadi link Google Maps.
+    window.kirimLokasiChat = function() {
+        if (!_chatOrderIdAktif) return;
+        if (!navigator.geolocation) { alert('GPS tidak didukung browser ini.'); return; }
+        const tombol = document.querySelector('.chat-btn-lokasi');
+        if (tombol) { tombol.disabled = true; tombol.innerText = '⏳'; }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                push(ref(database, `chats/${_chatOrderIdAktif}`), {
+                    from: 'driver',
+                    nama: namaDriverAktif || 'Driver',
+                    tipe: 'lokasi',
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                    waktu: Date.now()
+                }).finally(() => {
+                    if (tombol) { tombol.disabled = false; tombol.innerText = '📍'; }
+                });
+            },
+            (err) => {
+                alert('Gagal ambil lokasi GPS: ' + (err.message || 'izin lokasi ditolak.') + '\nPastikan izin lokasi browser sudah diaktifkan.');
+                if (tombol) { tombol.disabled = false; tombol.innerText = '📍'; }
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+
     // Badge titik merah kalau ada pesan baru dari customer yang belum dibuka driver.
     window.pantauUnreadChat = function(orderId) {
         if (_chatOrderBadgeYangDipantau.has(orderId)) return;
@@ -1559,8 +1598,17 @@
             snap.forEach(c => { pesanTerakhir = c.val(); });
             if (!pesanTerakhir || pesanTerakhir.from === 'driver') return;
             const lastRead = parseInt(localStorage.getItem('chat_lastread_' + orderId) || '0');
+            if (pesanTerakhir.waktu <= lastRead) return;
             const btn = document.getElementById('btnChat-' + orderId);
-            if (btn && pesanTerakhir.waktu > lastRead) btn.classList.add('has-unread');
+            if (btn) btn.classList.add('has-unread');
+            // Suara + notifikasi sistem -- sama seperti notifikasi orderan baru di app ini,
+            // jalan selama tab masih terbuka (termasuk di-background).
+            const a = document.getElementById('suaraNotif');
+            if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+            if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+                const bodyNotif = pesanTerakhir.tipe === 'lokasi' ? '📍 Membagikan lokasi GPS' : (pesanTerakhir.teks || 'Pesan baru');
+                new Notification(`💬 ${pesanTerakhir.nama || 'Customer'} — TulangTulung`, { body: bodyNotif, icon: '/logo-driver.png', tag: 'chat-' + orderId });
+            }
         });
     }
 </script>
