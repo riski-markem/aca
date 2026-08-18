@@ -471,6 +471,11 @@
     .chat-input-bar { display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--border); background:var(--card); flex-shrink:0; }
     .chat-input-bar input { flex:1; border:1px solid var(--border); border-radius:22px; padding:11px 16px; font-size:13.5px; font-family:inherit; outline:none; background:var(--bg); }
     .chat-input-bar button { background:var(--primary); color:#fff; border:none; width:42px; height:42px; border-radius:50%; font-size:16px; cursor:pointer; flex-shrink:0; }
+    .chat-btn-lokasi { background:#27ae60 !important; }
+    .chat-bubble-lokasi { display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .chat-bubble-lokasi span.lbl { font-weight:700; }
+    .chat-bubble.mine .chat-bubble-lokasi { color:#fff; }
+    .chat-bubble.theirs .chat-bubble-lokasi { color:var(--text); }
     .btn-chat-driver { position:relative; }
     .btn-chat-driver .chat-unread-dot { position:absolute; top:-3px; right:-3px; width:10px; height:10px; background:#EF4444; border-radius:50%; border:2px solid #fff; display:none; }
     .btn-chat-driver.has-unread .chat-unread-dot { display:block; }
@@ -950,6 +955,7 @@
         </div>
         <div class="chat-messages" id="chatMessagesBox"></div>
         <div class="chat-input-bar">
+            <button class="chat-btn-lokasi" onclick="kirimLokasiChat()" title="Bagikan lokasi GPS saat ini">📍</button>
             <input type="text" id="chatInputTeks" placeholder="Tulis pesan..." onkeypress="if(event.key==='Enter'){event.preventDefault();kirimPesanChat();}">
             <button onclick="kirimPesanChat()">➤</button>
         </div>
@@ -1975,22 +1981,13 @@
                         <button class="btn-ajukan-batal-link" onclick="batalkanPermintaanPembatalan('${data.id}')">${t.btnBatalkanPermintaan}</button>
                     `;
                 } else {
-                    const waktuAmbil = data.waktu_diambil || 0;
-                    const sisaMs = waktuAmbil ? (GRACE_BATAL_MS - (Date.now() - waktuAmbil)) : -1;
-
-                    if (waktuAmbil && sisaMs > 0) {
-                        const sisaDetik = Math.ceil(sisaMs / 1000);
-                        actionsHtml = `
-                            <button class="btn-cancel" onclick="ajukanPembatalan('${data.id}')">${t.btnBatalGratis} (${sisaDetik}s)</button>
-                            ${tombolWA}
-                        `;
-                    } else {
-                        actionsHtml = `
-                            ${tombolWA}
-                            <button class="btn-ajukan-batal-link" onclick="ajukanPembatalan('${data.id}')">${t.btnAjukanBatal}</button>
-                            <div class="batal-lock-note">${t.noteBatalTerkunci}</div>
-                        `;
-                    }
+                    // Selalu ajukan pembatalan ke driver (tidak ada lagi batal gratis otomatis
+                    // begitu order sudah diambil driver -- saldo driver sudah kepotong duluan).
+                    actionsHtml = `
+                        ${tombolWA}
+                        <button class="btn-ajukan-batal-link" onclick="ajukanPembatalan('${data.id}')">${t.btnAjukanBatal}</button>
+                        <div class="batal-lock-note">${t.noteBatalTerkunci}</div>
+                    `;
                 }
             }
 
@@ -2196,9 +2193,6 @@
     const ARGO_KM_DASAR = 4;          // batas jarak yang kena tarif flat
     const ARGO_TARIF_DASAR = 8000;    // Rp 8.000 untuk jarak 1-4 km
     const ARGO_TARIF_TAMBAHAN = 2000; // Rp 2.000 / km untuk tiap km di atas 4 km
-    // Batas waktu customer boleh batal GRATIS setelah driver menerima order (harus SAMA dengan
-    // GRACE_BATAL_MS di driver.html, karena driver.html yang eksekusi auto-approve-nya).
-    const GRACE_BATAL_MS = 90 * 1000; // 90 detik
     // Layanan yang ongkosnya dihitung per-km. "Bantu Bersih" & "Jasa Lainnya" nego/fleksibel jadi tidak dihitung.
     const LAYANAN_PER_KM = ['Antar Jemput', 'Kirim Barang', 'Titip Belanja', 'Pesan Makanan'];
     let _pickerMap = null;          // Instance Google Maps
@@ -2817,7 +2811,13 @@
                     const m = c.val();
                     const mine = m.from === 'customer';
                     const jam = m.waktu ? new Date(m.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '';
-                    html += `<div class="chat-bubble ${mine?'mine':'theirs'}">${_escHtmlChat(m.teks)}<span class="chat-bubble-time">${jam}</span></div>`;
+                    if (m.tipe === 'lokasi' && m.lat && m.lng) {
+                        // Pesan lokasi GPS -- tampilkan sebagai link yang langsung buka Google Maps,
+                        // supaya driver/customer tinggal tap tanpa perlu baca/ketik alamat manual.
+                        html += `<div class="chat-bubble ${mine?'mine':'theirs'}"><a class="chat-bubble-lokasi" href="https://www.google.com/maps?q=${m.lat},${m.lng}" target="_blank" rel="noopener">📍 <span class="lbl">Lihat Lokasi di Maps</span></a><span class="chat-bubble-time">${jam}</span></div>`;
+                    } else {
+                        html += `<div class="chat-bubble ${mine?'mine':'theirs'}">${_escHtmlChat(m.teks)}<span class="chat-bubble-time">${jam}</span></div>`;
+                    }
                 });
                 box.innerHTML = html;
                 box.scrollTop = box.scrollHeight;
@@ -2847,6 +2847,37 @@
         input.value = '';
     }
 
+    // Kirim lokasi GPS saat ini lewat chat (khusus buat customer yang males/bingung cari
+    // titik alamat di map picker pas bikin order). Dikirim sebagai pesan bertipe 'lokasi'
+    // isinya cuma koordinat -- direndernya jadi link Google Maps yang tinggal di-tap driver
+    // (lihat rendering di bukaChat). TIDAK menyimpan/menampilkan nomor HP siapa pun, tetap
+    // di dalam log chat order yang sama seperti pesan teks biasa.
+    window.kirimLokasiChat = function() {
+        if (!_chatOrderIdAktif) return;
+        if (!navigator.geolocation) { alert('GPS tidak didukung browser ini.'); return; }
+        const tombol = document.querySelector('.chat-btn-lokasi');
+        if (tombol) { tombol.disabled = true; tombol.innerText = '⏳'; }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                push(ref(database, `chats/${_chatOrderIdAktif}`), {
+                    from: 'customer',
+                    nama: userAktif.nama || 'Customer',
+                    tipe: 'lokasi',
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                    waktu: Date.now()
+                }).finally(() => {
+                    if (tombol) { tombol.disabled = false; tombol.innerText = '📍'; }
+                });
+            },
+            (err) => {
+                alert('Gagal ambil lokasi GPS: ' + (err.message || 'izin lokasi ditolak.') + '\nPastikan izin lokasi browser sudah diaktifkan.');
+                if (tombol) { tombol.disabled = false; tombol.innerText = '📍'; }
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+
     // Badge titik merah di tombol "Chat Driver" kalau ada pesan baru dari driver yang
     // belum dibuka. Dipasang sekali per order aktif (dedup pakai Set), pakai limitToLast(1)
     // biar ringan -- cuma perlu tahu pesan TERAKHIR, bukan seluruh riwayat.
@@ -2860,8 +2891,15 @@
             snap.forEach(c => { pesanTerakhir = c.val(); });
             if (!pesanTerakhir || pesanTerakhir.from === 'customer') return;
             const lastRead = parseInt(localStorage.getItem('chat_lastread_' + orderId) || '0');
+            if (pesanTerakhir.waktu <= lastRead) return;
             const btn = document.getElementById('btnChat-' + orderId);
-            if (btn && pesanTerakhir.waktu > lastRead) btn.classList.add('has-unread');
+            if (btn) btn.classList.add('has-unread');
+            // Notifikasi sistem kalau tab lagi di-background -- sama seperti notifikasi
+            // status order lainnya di app ini, cuma jalan selama tab masih terbuka.
+            if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+                const bodyNotif = pesanTerakhir.tipe === 'lokasi' ? '📍 Membagikan lokasi GPS' : (pesanTerakhir.teks || 'Pesan baru');
+                new Notification(`💬 ${pesanTerakhir.nama || 'Driver'} — TulangTulung`, { body: bodyNotif, icon: '/logo-satria.png', tag: 'chat-' + orderId });
+            }
         });
     }
 
