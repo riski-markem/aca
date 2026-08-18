@@ -255,6 +255,29 @@
         .mt10 { margin-top:10px; } .mt12 { margin-top:12px; } .mt16 { margin-top:16px; }
 
         /* ── MAP VIEW MODAL (Driver) ── */
+        /* ── CHAT IN-APP (driver <-> customer) ── */
+        /* Menggantikan link WA langsung ke nomor customer -- semua komunikasi lewat sini. */
+        .chat-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:flex; align-items:flex-end; justify-content:center; backdrop-filter:blur(3px); animation:fadeInD 0.2s ease; }
+        .chat-modal-overlay.hidden { display:none; }
+        .chat-modal-box { width:100%; max-width:480px; height:82vh; height:82dvh; background:var(--card); border-radius:24px 24px 0 0; display:flex; flex-direction:column; overflow:hidden; }
+        .chat-header { display:flex; align-items:center; gap:10px; padding:16px; border-bottom:1px solid var(--border); flex-shrink:0; }
+        .chat-header-avatar { width:38px; height:38px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+        .chat-header-name { font-weight:800; font-size:15px; color:var(--text); flex:1; }
+        .chat-header-sub { font-size:11px; color:var(--text3); font-weight:600; }
+        .chat-close-btn { background:var(--bg); border:none; width:32px; height:32px; border-radius:50%; font-size:15px; cursor:pointer; color:var(--text2); }
+        .chat-messages { flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:8px; background:var(--bg); }
+        .chat-bubble { max-width:78%; padding:9px 13px; border-radius:15px; font-size:13.5px; line-height:1.42; word-wrap:break-word; }
+        .chat-bubble.mine { align-self:flex-end; background:var(--primary); color:#fff; border-bottom-right-radius:4px; }
+        .chat-bubble.theirs { align-self:flex-start; background:var(--card); color:var(--text); border:1px solid var(--border); border-bottom-left-radius:4px; }
+        .chat-bubble-time { font-size:9.5px; opacity:0.65; margin-top:3px; display:block; text-align:right; }
+        .chat-empty { text-align:center; color:var(--text3); font-size:12.5px; font-weight:600; margin-top:50px; padding:0 30px; }
+        .chat-input-bar { display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--border); background:var(--card); flex-shrink:0; }
+        .chat-input-bar input { flex:1; border:1px solid var(--border); border-radius:22px; padding:11px 16px; font-size:13.5px; font-family:inherit; outline:none; background:var(--bg); }
+        .chat-input-bar button { background:var(--primary); color:#fff; border:none; width:42px; height:42px; border-radius:50%; font-size:16px; cursor:pointer; flex-shrink:0; }
+        .btn-chat-cust { position:relative; }
+        .btn-chat-cust .chat-unread-dot { position:absolute; top:-3px; right:-3px; width:10px; height:10px; background:#EF4444; border-radius:50%; border:2px solid #fff; display:none; }
+        .btn-chat-cust.has-unread .chat-unread-dot { display:block; }
+
         .map-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; backdrop-filter:blur(3px); animation:fadeInD 0.2s ease; }
         .map-modal-overlay.hidden { display:none; }
         @keyframes fadeInD { from{opacity:0;} to{opacity:1;} }
@@ -281,6 +304,24 @@
 <body>
 <audio id="suaraNotif" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 <input type="file" id="inputCustomSound" accept="audio/*" class="hidden" onchange="prosesUploadSuara(event)">
+
+<div id="modal-chat" class="chat-modal-overlay hidden" onclick="if(event.target===this) tutupChat()">
+    <div class="chat-modal-box">
+        <div class="chat-header">
+            <div class="chat-header-avatar">👤</div>
+            <div>
+                <div class="chat-header-name" id="chatHeaderNama">Chat Customer</div>
+                <div class="chat-header-sub">Chat di dalam aplikasi</div>
+            </div>
+            <button class="chat-close-btn" onclick="tutupChat()">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessagesBox"></div>
+        <div class="chat-input-bar">
+            <input type="text" id="chatInputTeks" placeholder="Tulis pesan..." onkeypress="if(event.key==='Enter'){event.preventDefault();kirimPesanChat();}">
+            <button onclick="kirimPesanChat()">➤</button>
+        </div>
+    </div>
+</div>
 
 <div id="modal-topup" class="modal-overlay hidden">
     <div class="modal-box">
@@ -630,7 +671,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue, runTransaction, get, child, set, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off, runTransaction, get, child, set, update, push, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js";
 
     // ── 1. KONFIGURASI FIREBASE ASLI TULANGTULUNG GOMBONG ──
@@ -753,14 +794,14 @@
 
     let namaDriverAktif = "", waDriverAktif = "", saldoDriverAktif = 0; let orderYangSudahBunyi = new Set(); let latestOrdersData = []; let currentLang = "ngapak";
     const BIAYA_PLATFORM = 1000;
-    // Total yang dipotong dari saldo driver SAAT AMBIL ORDER (bukan lagi dicicil 2x).
-    // Order makanan: cuma BIAYA_PLATFORM (biaya_layanan_makanan tetap dipotong terpisah
-    // saat selesai, karena nilainya baru pasti dari isi keranjang & itu logika lama yang
-    // tidak diubah). Order non-makanan: BIAYA_PLATFORM + biaya_layanan_jasa (flat
-    // Rp1.000) langsung sekaligus di depan -- customer bayar cash penggantinya saat
-    // order selesai, jadi bersih buat driver (dapat cash, saldo juga sudah lunas).
+    // Total yang dipotong dari saldo driver SAAT AMBIL ORDER -- sekaligus, tidak dicicil.
+    // Sekarang berlaku sama untuk order makanan MAUPUN non-makanan: BIAYA_PLATFORM +
+    // biaya layanan (biaya_layanan_makanan ATAU biaya_layanan_jasa, keduanya sekarang
+    // flat Rp1.000 dan sudah pasti sejak order dibuat customer, jadi tidak perlu lagi
+    // ditunda sampai order selesai). Customer bayar cash penggantinya saat order selesai,
+    // jadi bersih buat driver (dapat cash, saldo juga sudah lunas dari awal).
     function hitungTotalPotonganAmbil(data) {
-        return BIAYA_PLATFORM + (data?.biaya_layanan_jasa || 0);
+        return BIAYA_PLATFORM + (data?.biaya_layanan_makanan || 0) + (data?.biaya_layanan_jasa || 0);
     }
     // Batas waktu customer boleh batal GRATIS setelah driver menerima order (auto-approve, saldo driver dikembalikan).
     // Lewat batas ini, permintaan batal dari customer harus di-ACC/tolak manual oleh driver (lihat cekPermintaanBatalCustomer).
@@ -810,7 +851,7 @@
             emptyAktif:"Kowe urung nyekel garapan apa-apa.", emptyRadar:"Urung ana pesenan mlebu.<br>Ambi ngopi disit bae lur ☕",
             lblCust:"Pelanggan", lblDet1:"Methuk/Njukut", lblDet2:"Ngeter/Tujuan", lblNote:"Catetan", badgeAktif:"KUDU NDANG DIBERESNA", badgeNew:"PESENAN ANYAR",
             noteAktif:"Pesenan kiye arep ilang nek wis dikonfirmasi Selesai nang pelanggan.",
-            btnWa:"💬 Chat WA Pelanggone", btnWaResto:"💬 Chat WA Resto", btnAmbil:"Jikot Orderan Kiye ⚡",
+            btnWa:"💬 Chat Pelanggone", btnWaResto:"💬 Chat WA Resto", btnAmbil:"Jikot Orderan Kiye ⚡",
             lblSaldo:"Sisa Saldo Koin", saldoSub:"Kepotong Rp 1.000 saben njikot orderan", btnTopup:"➕ Isi Saldo (Top-Up)",
             lblSound:"🔊 Swara Notif", optCustom:"🎵 Swara Dewek (Upload)",
             btnLogout:"🚪 Metu (Logout)", histTitle:"Riwayat Tarikan", lblAvg:"Rating Rata-rata",
@@ -841,7 +882,7 @@
             txtSetuju:"Saya menyetujui aturan di atas", btnReg:"Kirim Pendaftaran 📝", txtYesReg:"Sudah punya akun?", linkLogin:"Masuk sekarang",
             statusTxt:"AKTIF MENCARI ORDER", lblSaldoTop:"SISA KOIN", statJalan:"Sedang Jalan", statBeres:"Total Selesai", titleAktif:"Pekerjaan Aktif", titleRadar:"Radar Pesanan Baru",
             emptyAktif:"Anda belum memegang pesanan apapun.", emptyRadar:"Belum ada orderan masuk.<br>Sambil ngopi dulu aja ☕", lblCust:"Pelanggan", lblDet1:"Ambil/Jemput", lblDet2:"Tujuan/Antar", lblNote:"Catatan", badgeAktif:"SEGERA SELESAIKAN", badgeNew:"PESANAN BARU",
-            noteAktif:"Orderan ini akan hilang saat dikonfirmasi Selesai oleh pelanggan.", btnWa:"💬 Chat WA Pelanggan", btnWaResto:"💬 Chat WA Resto", btnAmbil:"Ambil Pesanan Ini ⚡",
+            noteAktif:"Orderan ini akan hilang saat dikonfirmasi Selesai oleh pelanggan.", btnWa:"💬 Chat Pelanggan", btnWaResto:"💬 Chat WA Resto", btnAmbil:"Ambil Pesanan Ini ⚡",
             lblSaldo:"Sisa Saldo Koin", saldoSub:"Dipotong Rp 1.000 tiap orderan", btnTopup:"➕ Isi Saldo (Top-Up)", lblSound:"🔊 Suara Notif", optCustom:"🎵 Suara Sendiri",
             btnLogout:"🚪 Keluar (Logout)", histTitle:"Riwayat Pekerjaan", lblAvg:"Rating Rata-rata", navRadar:"Radar", navWallet:"Dompet", navHistory:"Riwayat", navProfile:"Profil",
             profHist:"Riwayat & Rating Saya", profWallet:"Dompet Saldo", titleRiwayatSaldo:"Riwayat Potongan Saldo",
@@ -868,7 +909,7 @@
             txtSetuju:"I agree to the rules", btnReg:"Submit 📝", txtYesReg:"Have an account?", linkLogin:"Login here",
             statusTxt:"ACTIVE & SEARCHING", lblSaldoTop:"COIN BALANCE", statJalan:"In Progress", statBeres:"Total Done", titleAktif:"Active Job", titleRadar:"New Order Radar",
             emptyAktif:"No active orders.", emptyRadar:"No new orders.<br>Grab a coffee ☕", lblCust:"Customer", lblDet1:"Pick-up", lblDet2:"Drop-off", lblNote:"Note", badgeAktif:"COMPLETE ASAP", badgeNew:"NEW ORDER",
-            noteAktif:"Order disappears when customer confirms completed.", btnWa:"💬 Chat Customer", btnWaResto:"💬 Chat Restaurant", btnAmbil:"Take Order ⚡",
+            noteAktif:"Order disappears when customer confirms completed.", btnWa:"💬 Chat Customer", btnWaResto:"💬 Chat Restaurant (WA)", btnAmbil:"Take Order ⚡",
             lblSaldo:"Coin Balance", saldoSub:"Rp 1,000 deducted per order", btnTopup:"➕ Top-Up", lblSound:"🔊 Alert Sound", optCustom:"🎵 Custom Sound",
             btnLogout:"🚪 Logout", histTitle:"Job History", lblAvg:"Average Rating", navRadar:"Radar", navWallet:"Wallet", navHistory:"History", navProfile:"Profile",
             profHist:"My History & Ratings", profWallet:"Coin Wallet", titleRiwayatSaldo:"Balance Deduction History",
@@ -1115,7 +1156,7 @@
             ${rows}
             <div class="oc-food-subtotal-row"><span>Subtotal Makanan</span><span>Rp ${(data.subtotal_makanan||0).toLocaleString('id-ID')}</span></div>
             <div class="oc-food-subtotal-row"><span>Biaya Layanan (app)</span><span>Rp ${(data.biaya_layanan_makanan||0).toLocaleString('id-ID')}</span></div>
-            <div class="oc-food-cod-note">💵 Bayar tunai ke resto Rp ${(data.subtotal_makanan||0).toLocaleString('id-ID')} saat ambil (harga asli, TANPA biaya layanan). Lalu tagih customer Rp ${((data.subtotal_makanan||0)+(data.biaya_layanan_makanan||0)+(data.estimasi_ongkos||0)).toLocaleString('id-ID')} (makanan + biaya layanan + ongkir) saat antar. Biaya layanan Rp ${(data.biaya_layanan_makanan||0).toLocaleString('id-ID')} akan otomatis dipotong dari saldomu saat orderan ditandai selesai.</div>
+            <div class="oc-food-cod-note">💵 Bayar tunai ke resto Rp ${(data.subtotal_makanan||0).toLocaleString('id-ID')} saat ambil (harga asli resto). Lalu tagih customer Rp ${((data.subtotal_makanan||0)+(data.biaya_layanan_makanan||0)+(data.estimasi_ongkos||0)).toLocaleString('id-ID')} saat antar.</div>
         </div>`;
     }
 
@@ -1137,7 +1178,7 @@
         latestOrdersData.forEach(data => {
             if(data.driver_nama===namaDriverAktif){ if(data.status==='selesai') hitungSelesai++; if(data.status==='diambil') hitungJalan++; }
             if(data.status==='diambil' && data.driver_nama===namaDriverAktif){
-                adaAktif=true; const card = document.createElement('div'); card.className='order-card order-card-active';
+                adaAktif=true; pantauUnreadChat(data.id); const card = document.createElement('div'); card.className='order-card order-card-active';
                 card.innerHTML=`
                     <div class="oc-header"><span class="oc-badge oc-badge-active">${t.badgeAktif}</span><span class="oc-time">⏱️ ${data.waktu_order||''}</span></div>
                     <div class="oc-body">
@@ -1154,7 +1195,7 @@
                         </div>
                         ` : `
                         <div class="oc-note-bottom">${t.noteAktif}</div>
-                        <button class="btn-wa-chat" onclick="chatUlang('${data.customer_wa}')">${t.btnWa}</button>
+                        <button class="btn-wa-chat btn-chat-cust" id="btnChat-${data.id}" onclick="bukaChat('${data.id}','${(data.customer_nama||'Customer').replace(/'/g,"\\'")}')">${t.btnWa}<span class="chat-unread-dot"></span></button>
                         ${data.resto_id ? `<button class="btn-wa-chat" style="background:#FFF3E0;color:#E65100;border-color:#FFCC80;" onclick="chatUlang('${data.resto_id}')">${t.btnWaResto}</button>` : ''}
                         ${(data.pickup_lat && data.pickup_lng) ? `<button class="btn-wa-chat" style="background:#E8F5E9;color:#1B5E20;border-color:#A5D6A7;margin-top:6px;" onclick="bukaPetaOrderan('${data.pickup_lat}','${data.pickup_lng}','${data.dropoff_lat||''}','${data.dropoff_lng||''}','${(data.detail_1||'').replace(/'/g,'')}','${(data.detail_2||'').replace(/'/g,'')}')">🗺️ Lihat Peta & Navigasi</button>` : ''}
                         <div class="action-grid"><button class="btn-cancel-order" onclick="batalAmbilOrderan('${data.id}')">${t.btnCancelOrder}</button><button class="btn-complete-order" onclick="selesaikanOrderanDriver('${data.id}')">${t.btnCompleteOrder}</button></div>
@@ -1238,7 +1279,14 @@
             if(hasil.committed){
                 update(ref(database,`drivers/${waDriverAktif}`),{saldo:saldoDriverAktif-totalPotongan});
                 alert(t.alertSuccess.replace(/Rp\s?1[.,]000/, 'Rp ' + totalPotongan.toLocaleString('id-ID')));
-                window.open(`https://wa.me/62${noWA}?text=${encodeURIComponent(`${t.waTemplate1}${namaCust}${t.waTemplate2}${namaDriverAktif}${t.waTemplate3}`)}`,'_blank');
+                // Dulu di sini auto-buka WA ke nomor pribadi customer. Sekarang diganti kirim
+                // pesan sapaan otomatis lewat chat in-app -- customer tidak perlu tahu nomor
+                // pribadi driver, dan sebaliknya.
+                push(ref(database, `chats/${orderId}`), {
+                    from: 'driver', nama: namaDriverAktif,
+                    teks: `${t.waTemplate1}${namaCust}${t.waTemplate2}${namaDriverAktif}${t.waTemplate3}`,
+                    waktu: Date.now()
+                });
             } else { alert(t.alertLate); }
         }).catch(e=>alert('Error: '+e));
     }
@@ -1256,21 +1304,11 @@
     }
     window.selesaikanOrderanDriver = function(orderId) {
         const t = langDict[currentLang];
-        const data = latestOrdersData.find(o => o.id === orderId);
-        // biaya_layanan_jasa (order non-makanan) SUDAH dipotong di depan waktu ambil order
-        // (lihat ambilOrderan/hitungTotalPotonganAmbil), jadi tidak dipotong lagi di sini.
-        // biaya_layanan_makanan (order makanan) baru dipotong sekarang karena nilainya
-        // per-item, baru pasti setelah diambil -- logika ini tidak diubah.
-        const biayaLayanan = data?.biaya_layanan_makanan || 0;
-        let pesanKonfirmasi = t.alertCompleteConf;
-        if (biayaLayanan > 0) {
-            pesanKonfirmasi += `\n\nSaldomu akan terpotong Rp ${biayaLayanan.toLocaleString('id-ID')} (biaya layanan yang sudah kamu tagih ke customer).`;
-        }
-        if (confirm(pesanKonfirmasi)) {
+        // Semua biaya layanan (makanan MAUPUN jasa non-makanan) SEKARANG sudah dipotong
+        // di depan waktu ambil order (lihat ambilOrderan/hitungTotalPotonganAmbil), jadi
+        // tidak ada potongan saldo lagi di titik "selesai" ini -- tinggal update status.
+        if (confirm(t.alertCompleteConf)) {
             update(ref(database, 'orders/' + orderId), { status: 'selesai' });
-            if (biayaLayanan > 0) {
-                update(ref(database, `drivers/${waDriverAktif}`), { saldo: saldoDriverAktif - biayaLayanan });
-            }
         }
     }
 
@@ -1448,6 +1486,82 @@
         document.getElementById('modal-map-view').classList.add('hidden');
         // Bersihkan directions supaya hemat
         if (_directionsRenderer) _directionsRenderer.setMap(null);
+    }
+
+    // ── CHAT IN-APP (driver <-> customer) ──
+    // Menggantikan link WhatsApp langsung ke nomor pribadi customer. Semua pesan
+    // tersimpan di chats/{orderId} supaya bisa dipantau admin kalau ada penyalahgunaan.
+    let _chatOrderIdAktif = null;
+    let _chatListenerPath = null;
+    const _chatOrderBadgeYangDipantau = new Set();
+
+    function _escHtmlChat(str) {
+        const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML;
+    }
+
+    window.bukaChat = function(orderId, namaCustomer) {
+        _chatOrderIdAktif = orderId;
+        document.getElementById('chatHeaderNama').textContent = namaCustomer || 'Customer';
+        document.getElementById('modal-chat').classList.remove('hidden');
+        document.getElementById('chatMessagesBox').innerHTML = '<div class="chat-empty">Memuat pesan...</div>';
+
+        if (_chatListenerPath) off(ref(database, _chatListenerPath));
+        _chatListenerPath = `chats/${orderId}`;
+        onValue(ref(database, _chatListenerPath), (snap) => {
+            const box = document.getElementById('chatMessagesBox');
+            if (!box) return;
+            if (!snap.exists()) {
+                box.innerHTML = '<div class="chat-empty">Belum ada pesan.<br>Mulai chat dengan customer di sini.</div>';
+            } else {
+                let html = '';
+                snap.forEach(c => {
+                    const m = c.val();
+                    const mine = m.from === 'driver';
+                    const jam = m.waktu ? new Date(m.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '';
+                    html += `<div class="chat-bubble ${mine?'mine':'theirs'}">${_escHtmlChat(m.teks)}<span class="chat-bubble-time">${jam}</span></div>`;
+                });
+                box.innerHTML = html;
+                box.scrollTop = box.scrollHeight;
+            }
+            localStorage.setItem('chat_lastread_' + orderId, Date.now().toString());
+            const btn = document.getElementById('btnChat-' + orderId);
+            if (btn) btn.classList.remove('has-unread');
+        });
+    }
+
+    window.tutupChat = function() {
+        document.getElementById('modal-chat').classList.add('hidden');
+        if (_chatListenerPath) { off(ref(database, _chatListenerPath)); _chatListenerPath = null; }
+        _chatOrderIdAktif = null;
+    }
+
+    window.kirimPesanChat = function() {
+        const input = document.getElementById('chatInputTeks');
+        const teks = input.value.trim();
+        if (!teks || !_chatOrderIdAktif) return;
+        push(ref(database, `chats/${_chatOrderIdAktif}`), {
+            from: 'driver',
+            nama: namaDriverAktif || 'Driver',
+            teks: teks,
+            waktu: Date.now()
+        });
+        input.value = '';
+    }
+
+    // Badge titik merah kalau ada pesan baru dari customer yang belum dibuka driver.
+    window.pantauUnreadChat = function(orderId) {
+        if (_chatOrderBadgeYangDipantau.has(orderId)) return;
+        _chatOrderBadgeYangDipantau.add(orderId);
+        const q = query(ref(database, `chats/${orderId}`), limitToLast(1));
+        onValue(q, (snap) => {
+            if (!snap.exists() || _chatOrderIdAktif === orderId) return;
+            let pesanTerakhir = null;
+            snap.forEach(c => { pesanTerakhir = c.val(); });
+            if (!pesanTerakhir || pesanTerakhir.from === 'driver') return;
+            const lastRead = parseInt(localStorage.getItem('chat_lastread_' + orderId) || '0');
+            const btn = document.getElementById('btnChat-' + orderId);
+            if (btn && pesanTerakhir.waktu > lastRead) btn.classList.add('has-unread');
+        });
     }
 </script>
 </body>
