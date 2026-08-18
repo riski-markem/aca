@@ -275,10 +275,13 @@
         .chat-input-bar input { flex:1; border:1px solid var(--border); border-radius:22px; padding:11px 16px; font-size:13.5px; font-family:inherit; outline:none; background:var(--bg); }
         .chat-input-bar button { background:var(--primary); color:#fff; border:none; width:42px; height:42px; border-radius:50%; font-size:16px; cursor:pointer; flex-shrink:0; }
         .chat-btn-lokasi { background:#27ae60 !important; }
+        .chat-btn-foto { background:#3498db !important; }
         .chat-bubble-lokasi { display:flex; align-items:center; gap:8px; text-decoration:none; }
         .chat-bubble-lokasi span.lbl { font-weight:700; }
         .chat-bubble.mine .chat-bubble-lokasi { color:#fff; }
         .chat-bubble.theirs .chat-bubble-lokasi { color:var(--text); }
+        .chat-bubble-foto { padding:5px !important; background:transparent !important; border:none !important; }
+        .chat-bubble-foto img { display:block; max-width:100%; max-height:260px; border-radius:12px; object-fit:cover; }
         .btn-chat-cust { position:relative; }
         .btn-chat-cust .chat-unread-dot { position:absolute; top:-3px; right:-3px; width:10px; height:10px; background:#EF4444; border-radius:50%; border:2px solid #fff; display:none; }
         .btn-chat-cust.has-unread .chat-unread-dot { display:block; }
@@ -322,7 +325,9 @@
         </div>
         <div class="chat-messages" id="chatMessagesBox"></div>
         <div class="chat-input-bar">
+            <input type="file" id="chatInputFoto" accept="image/*" class="hidden" onchange="kirimFotoChat(this)">
             <button class="chat-btn-lokasi" onclick="kirimLokasiChat()" title="Bagikan lokasi GPS saat ini">📍</button>
+            <button class="chat-btn-foto" onclick="document.getElementById('chatInputFoto').click()" title="Kirim foto">📷</button>
             <input type="text" id="chatInputTeks" placeholder="Tulis pesan..." onkeypress="if(event.key==='Enter'){event.preventDefault();kirimPesanChat();}">
             <button onclick="kirimPesanChat()">➤</button>
         </div>
@@ -679,6 +684,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, onValue, off, runTransaction, get, child, set, update, push, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
     // ── 1. KONFIGURASI FIREBASE ASLI TULANGTULUNG GOMBONG ──
     const firebaseConfig = {
@@ -694,6 +700,7 @@
     
     const app = initializeApp(firebaseConfig); 
     const database = getDatabase(app);
+    const storage = getStorage(app);
     let messaging;
     try { messaging = getMessaging(app); } catch(e) { console.log('FCM not supported'); }
 
@@ -1505,6 +1512,35 @@
         const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML;
     }
 
+    // Kompres foto sebelum diunggah -- sama seperti kompresi foto menu resto -- supaya
+    // hemat kuota & cepat kekirim meski sinyal driver lagi jelek pas di lapangan.
+    function kompresGambarChat(file, maxWidth = 1000, kualitas = 0.7) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onerror = () => reject(new Error('Gagal membaca file.'));
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onerror = () => reject(new Error('File bukan gambar yang valid.'));
+                img.onload = () => {
+                    let { width, height } = img;
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    canvas.toBlob((blob) => {
+                        if (blob) resolve(blob); else reject(new Error('Gagal memproses gambar.'));
+                    }, 'image/jpeg', kualitas);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     window.bukaChat = function(orderId, namaCustomer) {
         _chatOrderIdAktif = orderId;
         document.getElementById('chatHeaderNama').textContent = namaCustomer || 'Customer';
@@ -1526,6 +1562,8 @@
                     const jam = m.waktu ? new Date(m.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '';
                     if (m.tipe === 'lokasi' && m.lat && m.lng) {
                         html += `<div class="chat-bubble ${mine?'mine':'theirs'}"><a class="chat-bubble-lokasi" href="https://www.google.com/maps?q=${m.lat},${m.lng}" target="_blank" rel="noopener">📍 <span class="lbl">Lihat Lokasi di Maps</span></a><span class="chat-bubble-time">${jam}</span></div>`;
+                    } else if (m.tipe === 'foto' && m.url) {
+                        html += `<div class="chat-bubble chat-bubble-foto ${mine?'mine':'theirs'}"><a href="${m.url}" target="_blank" rel="noopener"><img src="${m.url}" alt="Foto" loading="lazy"></a><span class="chat-bubble-time">${jam}</span></div>`;
                     } else {
                         html += `<div class="chat-bubble ${mine?'mine':'theirs'}">${_escHtmlChat(m.teks)}<span class="chat-bubble-time">${jam}</span></div>`;
                     }
@@ -1587,6 +1625,39 @@
         );
     }
 
+    // Kirim foto lewat chat -- dipakai driver buat kirim bukti udah sampai TKP, atau foto
+    // kondisi gang/jalan pas bingung nyari alamat customer.
+    window.kirimFotoChat = async function(inputEl) {
+        const file = inputEl.files[0];
+        if (!file || !_chatOrderIdAktif) return;
+        if (file.size > 15 * 1024 * 1024) {
+            alert('Ukuran file terlalu besar (maks 15MB). Pilih foto lain ya.');
+            inputEl.value = '';
+            return;
+        }
+        const tombol = document.querySelector('.chat-btn-foto');
+        if (tombol) { tombol.disabled = true; tombol.innerText = '⏳'; }
+        try {
+            const blob = await kompresGambarChat(file, 1000, 0.7);
+            const path = `chat-foto/${_chatOrderIdAktif}/${Date.now()}.jpg`;
+            const fileRef = storageRef(storage, path);
+            await uploadBytes(fileRef, blob, { contentType: 'image/jpeg' });
+            const url = await getDownloadURL(fileRef);
+            await push(ref(database, `chats/${_chatOrderIdAktif}`), {
+                from: 'driver',
+                nama: namaDriverAktif || 'Driver',
+                tipe: 'foto',
+                url: url,
+                waktu: Date.now()
+            });
+        } catch (e) {
+            alert('Gagal kirim foto: ' + (e.message || 'coba lagi.'));
+        } finally {
+            if (tombol) { tombol.disabled = false; tombol.innerText = '📷'; }
+            inputEl.value = '';
+        }
+    }
+
     // Badge titik merah kalau ada pesan baru dari customer yang belum dibuka driver.
     window.pantauUnreadChat = function(orderId) {
         if (_chatOrderBadgeYangDipantau.has(orderId)) return;
@@ -1606,7 +1677,7 @@
             const a = document.getElementById('suaraNotif');
             if (a) { a.currentTime = 0; a.play().catch(() => {}); }
             if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-                const bodyNotif = pesanTerakhir.tipe === 'lokasi' ? '📍 Membagikan lokasi GPS' : (pesanTerakhir.teks || 'Pesan baru');
+                const bodyNotif = pesanTerakhir.tipe === 'lokasi' ? '📍 Membagikan lokasi GPS' : (pesanTerakhir.tipe === 'foto' ? '📷 Mengirim foto' : (pesanTerakhir.teks || 'Pesan baru'));
                 new Notification(`💬 ${pesanTerakhir.nama || 'Customer'} — TulangTulung`, { body: bodyNotif, icon: '/logo-driver.png', tag: 'chat-' + orderId });
             }
         });
